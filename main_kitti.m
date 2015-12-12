@@ -4,12 +4,6 @@ clc;
 
 addpath(genpath('.'));
 
-global sq_0_test
-global sq_0_train
-global sq_0_test_flow_noc
-global sq_0_train_flow_noc
-global sq_0_m4_kitti_flow_noc
-
 % Read image_0
 
 sq_0_train{1} = imread('./data_stereo_flow/training/image_0/000045_10.png');
@@ -82,4 +76,29 @@ F_err = flow_error_image(sq_0_gt_flow_noc{2},sq_0_est_kitti_flow_noc{2});
 figure,imshow(F_err);
 title(sprintf('Error: %.2f %%. MSEN: %.2f.',f_err*100,MSEN));
 figure,flow_error_histogram(sq_0_gt_flow_noc{2},sq_0_est_kitti_flow_noc{2});
+
+pause;
+
+%% Task 6
+
+close all
+
+figure(1)
+subplot(2,1,1)
+plot_opticalFlow(sq_0_gt_flow_noc{1});
+title('Ground Truth 1')
+
+subplot(2,1,2)
+plot_opticalFlow(sq_0_est_kitti_flow_noc{1});
+title('Estimation 1')
+
+pause;
+
+figure(2)
+subplot(2,1,1)
+plot_opticalFlow(sq_0_gt_flow_noc{2});
+title('Ground Truth 2')
+subplot(2,1,2)
+plot_opticalFlow(sq_0_est_kitti_flow_noc{2});
+title('Estimation 2')
 

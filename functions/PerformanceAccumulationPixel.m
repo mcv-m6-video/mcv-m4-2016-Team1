@@ -14,9 +14,11 @@ function [pixelTP, pixelFP, pixelFN, pixelTN] = PerformanceAccumulationPixel(pix
     % The function returns the number of True Positive (pixelTP), False Positive (pixelFP), 
     % False Negative (pixelFN) and True Negative (pixelTN) pixels in the image pixelCandidates
 
+    % Binarize the detections
     pixelCandidates = pixelCandidates>0;
     pixelAnnotation = pixelAnnotation>0;
     
+    % Compute TP, FP, FN and TN
     pixelTP = sum(sum(pixelCandidates>0 & pixelAnnotation>0));
     pixelFP = sum(sum(pixelCandidates>0 & pixelAnnotation==0));
     pixelFN = sum(sum(pixelCandidates==0 & pixelAnnotation>0));

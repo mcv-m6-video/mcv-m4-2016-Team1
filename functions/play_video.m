@@ -3,6 +3,7 @@ function play_video(seq1,seq2,seq3, seq4, step)
 
 figure(1);
 
+% Reproduce all the images in a 2x2 figure.
 for t=1:step:200
     subplot(2,2,1);
     imshow(seq1{t});

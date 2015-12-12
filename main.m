@@ -1,6 +1,6 @@
 
-close;
-clear;
+close all;
+clear all;
 clc;
 
 addpath(genpath('.'));
@@ -74,9 +74,13 @@ F1_vector_B = zeros(1,length(test_B));
 for i=1:length(test_A)
     [TP_A, FP_A, FN_A, TN_A] = PerformanceAccumulationPixel(test_A{i},seq_gt{i});
     TP_A_counter=TP_A_counter+TP_A; TN_A_counter=TN_A_counter+TN_A; FN_A_counter=FN_A_counter+FN_A; FP_A_counter=FP_A_counter+FP_A;
-    
+    [Precision_A, Accuracy_A, Specificity_A, Recall_A, F1_A] = PerformanceEvaluationPixel(TP_A, FP_A, FN_A, TN_A);
+    F1_vector_A(i)=F1_A;
+
     [TP_B, FP_B, FN_B, TN_B] = PerformanceAccumulationPixel(test_B{i},seq_gt{i});
     TP_B_counter=TP_B_counter+TP_B; TN_B_counter=TN_B_counter+TN_B; FN_B_counter=FN_B_counter+FN_B; FP_B_counter=FP_B_counter+FP_B;
+    [Precision_B, Accuracy_B, Specificity_B, Recall_B, F1_B] = PerformanceEvaluationPixel(TP_B, FP_B, FN_B, TN_B);
+     F1_vector_B(i)=F1_B;
 end
 TP_A_counter, TN_A_counter, FN_A_counter, FP_A_counter
 TP_B_counter, TN_B_counter, FN_B_counter, FP_B_counter
@@ -85,13 +89,19 @@ TP_B_counter, TN_B_counter, FN_B_counter, FP_B_counter
 [Precision_B, Accuracy_B, Specificity_B, Recall_B, F1_B] = PerformanceEvaluationPixel(TP_B_counter, FP_B_counter, FN_B_counter, TN_B_counter);
 [Precision_A, Accuracy_A, Specificity_A, Recall_A, F1_A]
 [Precision_B, Accuracy_B, Specificity_B, Recall_B, F1_B]
+
+
 %% TASK 2
 
 
 
-
-
 %% TASK 3
+figure(1)
+plot_F1_vs_frame(F1_vector_A)
+pause(0.1)
+figure(2)
+plot_F1_vs_frame(F1_vector_B)
+pause;
 
 
 

@@ -66,18 +66,19 @@ title('m4 kitti flow')
 % non-ocluded areas.
 % 1st test
 tau=3;
-f_err = flow_error(sq_0_gt_flow_noc{1},sq_0_est_kitti_flow_noc{1},tau);
+
+[MSEN,f_err] = flow_error(sq_0_gt_flow_noc{1},sq_0_est_kitti_flow_noc{1},tau);
 F_err = flow_error_image(sq_0_gt_flow_noc{1},sq_0_est_kitti_flow_noc{1});
 % figure,imshow([flow_to_color([sq_0_est_kitti_flow_noc{1};sq_0_gt_flow_noc{1}]);F_err]);
 figure,imshow(F_err);
-title(sprintf('Error: %.2f %%',f_err*100));
+title(sprintf('Error: %.2f %%. MSEN: %.2f.',f_err*100,MSEN));
 figure,flow_error_histogram(sq_0_gt_flow_noc{1},sq_0_est_kitti_flow_noc{1});
 pause;
 % 2nd test
 close all;
-f_err = flow_error(sq_0_gt_flow_noc{2},sq_0_est_kitti_flow_noc{2},tau);
+[MSEN,f_err] = flow_error(sq_0_gt_flow_noc{2},sq_0_est_kitti_flow_noc{2},tau);
 F_err = flow_error_image(sq_0_gt_flow_noc{2},sq_0_est_kitti_flow_noc{2});
 figure,imshow(F_err);
-title(sprintf('Error: %.2f %%',f_err*100));
+title(sprintf('Error: %.2f %%. MSEN: %.2f.',f_err*100,MSEN));
 figure,flow_error_histogram(sq_0_gt_flow_noc{2},sq_0_est_kitti_flow_noc{2});
 

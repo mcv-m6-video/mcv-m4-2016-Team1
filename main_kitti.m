@@ -27,19 +27,19 @@ t = 1;
 
 subplot(4,2,1);
 imshow(sq_0_train{t});
-title('train image_1 10')
+title('Image 45-01')
 
 subplot(4,2,3);
 imshow(sq_0_train{t+1});
-title('train image_1 11')
+title('Image 45-02')
 
 subplot(4,2,2)
 imshow(sq_1_train{t});
-title('train image_1 157 10')
+title('Image 157-01')
 
 subplot(4,2,4)
 imshow(sq_1_train{t+1});
-title('train image_1 157 11')
+title('Image 157-02')
 
 subplot(4,2,5);
 imshow(flow_to_color(sq_0_gt_flow_noc{t}));

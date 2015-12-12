@@ -26,6 +26,7 @@ sq_0_est_kitti_flow_noc{2} = flow_read('./results_kitti/LKflow_000157_10.png');
 
 % Plot figure 1
 
+hold on
 figure(1);
 
 t = 1;
@@ -47,21 +48,21 @@ imshow(sq_1_train{t+1});
 title('train image_1 157 11')
 
 subplot(4,2,5);
-imshow(sq_0_gt_flow_noc{t});
-title('train kitti flow')
+imshow(flow_to_color(sq_0_gt_flow_noc{t}));
+title('GT kitti flow')
 
 subplot(4,2,6);
-imshow(sq_0_gt_flow_noc{t+1});
-title('train kitti flow')
+imshow(flow_to_color(sq_0_gt_flow_noc{t+1}));
+title('GT kitti flow')
 
 subplot(4,2,7);
-imshow(sq_0_est_kitti_flow_noc{t});
-title('m4 kitti flow')
+imshow(flow_to_color(sq_0_est_kitti_flow_noc{t}));
+title('Est kitti flow')
 
 subplot(4,2,8);
-imshow(sq_0_est_kitti_flow_noc{t+1});
-title('m4 kitti flow')
-
+imshow(flow_to_color(sq_0_est_kitti_flow_noc{t+1}));
+title('Est kitti flow')
+hold off
 %% Task 4 Compute the mean magnitude error, MMEN, for all pixels in
 % non-ocluded areas.
 % 1st test

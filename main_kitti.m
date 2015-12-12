@@ -62,19 +62,22 @@ subplot(4,2,8);
 imshow(sq_0_est_kitti_flow_noc{t+1});
 title('m4 kitti flow')
 
-% Task 4 Compute the mean magnitude error, MMEN, for all pixels in
+%% Task 4 Compute the mean magnitude error, MMEN, for all pixels in
 % non-ocluded areas.
+% 1st test
 tau=3;
 f_err = flow_error(sq_0_gt_flow_noc{1},sq_0_est_kitti_flow_noc{1},tau);
 F_err = flow_error_image(sq_0_gt_flow_noc{1},sq_0_est_kitti_flow_noc{1});
-figure,imshow([flow_to_color([sq_0_est_kitti_flow_noc{1};sq_0_gt_flow_noc{1}]);F_err]);
+% figure,imshow([flow_to_color([sq_0_est_kitti_flow_noc{1};sq_0_gt_flow_noc{1}]);F_err]);
+figure,imshow(F_err);
 title(sprintf('Error: %.2f %%',f_err*100));
 figure,flow_error_histogram(sq_0_gt_flow_noc{1},sq_0_est_kitti_flow_noc{1});
 pause;
+% 2nd test
 close all;
 f_err = flow_error(sq_0_gt_flow_noc{2},sq_0_est_kitti_flow_noc{2},tau);
 F_err = flow_error_image(sq_0_gt_flow_noc{2},sq_0_est_kitti_flow_noc{2});
-figure,imshow([flow_to_color([sq_0_est_kitti_flow_noc{2};sq_0_gt_flow_noc{2}]);F_err]);
+figure,imshow(F_err);
 title(sprintf('Error: %.2f %%',f_err*100));
 figure,flow_error_histogram(sq_0_gt_flow_noc{2},sq_0_est_kitti_flow_noc{2});
 

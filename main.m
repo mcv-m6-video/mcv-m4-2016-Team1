@@ -98,7 +98,6 @@ TP_B_counter, TN_B_counter, FN_B_counter, FP_B_counter
 %% TASK 3
 figure(1)
 plot_F1_vs_frame(F1_vector_A)
-pause(0.1)
 figure(2)
 plot_F1_vs_frame(F1_vector_B)
 pause;

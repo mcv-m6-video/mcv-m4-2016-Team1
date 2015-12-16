@@ -171,6 +171,6 @@ end
 xLabel = 'Delay';
 yLabel = 'F1';
 figure(1)
-plot_F1_vs_frame(F1_vector_A_DELAY,F1_vector_B_DELAY, xLabel, yLabel);
+plot_F1s_desync(F1_vector_A_DELAY,F1_vector_B_DELAY, xLabel, yLabel);
     
     

@@ -1,5 +1,5 @@
 % function to compute the multiple gaussian method
-% based on work of David Martin Berregon.
+% based on work of Delia Fernández C.
 %
 %Input :
 % Threshold : Threshold to assign pixels to a Gaussian model 

@@ -60,6 +60,7 @@ end
 %%
 % Uncomment if you want to see the video!
 % play_video(seq_input, seq_gt, test_A, test_B, 1);
+% pause;
 %play_video(test_A, test_B, 1);
 
 

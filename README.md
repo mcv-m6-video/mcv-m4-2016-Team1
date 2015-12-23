@@ -18,3 +18,5 @@ The highway dataset is stored in highway.
 In results and results_kitti are stored the results used in this practical session.
 
 Good luck!
+
+####### WEEK 2 #######

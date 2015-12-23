@@ -19,4 +19,4 @@ In results and results_kitti are stored the results used in this practical sessi
 
 Good luck!
 
-####### WEEK 2 #######
+###### WEEK 2 ######

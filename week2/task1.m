@@ -19,16 +19,16 @@ for f = seq_starting_test : seq_length
        
     % We pick as foreground those pixels which differ too much from the mean
     foreEstim{f-seq_starting_test+1} = (double(seq{f}) - seq_mean) >= alpha.*(seq_std + 2); 
-    subplot(2,2,1)
-    imshow(foreEstim{f-seq_starting_test+1})
-    subplot(2,2,2)
-    imshow(seq{f})
-    
-    subplot(2,2,3)
-    imshow(uint8(seq_mean))
-    subplot(2,2,4)
-    imshow(uint8(seq_std))
-    pause();
+%     subplot(2,2,1)
+%     imshow(foreEstim{f-seq_starting_test+1})
+%     subplot(2,2,2)
+%     imshow(seq{f})
+%     
+%     subplot(2,2,3)
+%     imshow(uint8(seq_mean))
+%     subplot(2,2,4)
+%     imshow(uint8(seq_std))
+%     pause();
 
     
     

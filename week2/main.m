@@ -3,12 +3,12 @@ clear all;
 clc;
 
 %% Select execution options
-doTask1 = true;         % Gaussian function to evaluate background
+doTask1 = false;         % Gaussian function to evaluate background
 show_videos_1 = false;  % (From Task1) show back- foreground videos
 doTask2 = false;         % (From Task1) TP, TN, FP, FN, F1score vs alpha
 doTask3 = true;         % (From Task1) Precision vs recall, AUC
 
-doTask4 = false;        % Adaptive modelling
+doTask4 = true;        % Adaptive modelling
 show_videos_4 = false;  % (From Task4) show back- foreground videos
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -73,9 +73,8 @@ for i=1:length(fileTSet_input)
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Non-recursive Gaussian modeling
+% Non-recursive Gaussian modeling
 if doTask1
-
     %% TASK 1
     disp('--------TASK 1--------');
     
@@ -89,75 +88,49 @@ if doTask1
         [forEstim_traffic,t1_t,t2_t]= task1(seq_input_traffic,alpha(i), show_videos_1);
 
         if (doTask2 || doTask3)
-        %% Evaluation functions for TASK 1 (TASK 2 and TASK 3)
+            
+            % Evaluation functions for TASK 1 (TASK 2 and TASK 3)
+            [TP_h(i), FP_h(i), FN_h(i), TN_h(i), Precision_h(i), Accuracy_h(i), Specificity_h(i), Recall_h(i), F1_h(i)] = task2(forEstim_highway,gt_input_highway(t1_h:end));
+            [TP_f(i), FP_f(i), FN_f(i), TN_f(i), Precision_f(i), Accuracy_f(i), Specificity_f(i), Recall_f(i), F1_f(i)] = task2(forEstim_fall,gt_input_fall(t1_f:end));
+            [TP_t(i), FP_t(i), FN_t(i), TN_t(i), Precision_t(i), Accuracy_t(i), Specificity_t(i), Recall_t(i), F1_t(i)] = task2(forEstim_traffic,gt_input_traffic(t1_t:end));
 
-        [TP_h(i), FP_h(i), FN_h(i), TN_h(i), Precision_h(i), Accuracy_h(i), Specificity_h(i), Recall_h(i), F1_h(i)] = task2(forEstim_highway,gt_input_highway(t1_h:end));
-        [TP_f(i), FP_f(i), FN_f(i), TN_f(i), Precision_f(i), Accuracy_f(i), Specificity_f(i), Recall_f(i), F1_f(i)] = task2(forEstim_fall,gt_input_fall(t1_f:end));
-        [TP_t(i), FP_t(i), FN_t(i), TN_t(i), Precision_t(i), Accuracy_t(i), Specificity_t(i), Recall_t(i), F1_t(i)] = task2(forEstim_traffic,gt_input_traffic(t1_t:end));
-        
         end
 
     end
 
+    %% TASK 2
     if doTask2
         
-        %% Plot TP, TN, FP, FN
         disp('--------TASK 2--------');
+        % Plot TP, TN, FP, FN
         plot_metrics_t2(alpha, TP_h, TP_f, TP_t, TN_h, TN_f, TN_t, FP_h, FP_f, FP_t, FN_h, FN_f, FN_t);
+                
+        % Plot F1 Score
+        plot_f1_t2(alpha, F1_h, F1_f, F1_t);
             
     end
 
+    %% TASK 3
+    if doTask3
+        
+        disp('--------TASK 3--------');
+        % Plot Precision VS Recall
+        plot_precision_recall_t3(Recall_h, Recall_f, Recall_t, Precision_h, Precision_f, Precision_t);
     
-    % Plot F1 Score
-    fprintf('\nPlotting F1 Scores...')
-    figure(2)
-    plot(alpha,F1_h,alpha,F1_f,alpha,F1_t)
-    xlabel('Alpha')
-    ylabel('F1')
-    legend('F1 Highway','F1 Fall','F1 Traffic')
-    title('F1 Score')
+        % Calculate the area under the curve
+        Area_h = trapz(flip(Recall_h), Precision_h);
+        disp(['Area under the curve for the Highway: ', num2str(Area_h)])
+
+        Area_f = trapz(flip(Recall_f), Precision_f);
+        disp(['Area under the curve for the Fall: ', num2str(Area_f)])
+
+        Area_t = trapz(flip(Recall_t), Precision_t);
+        disp(['Area under the curve for the Traffic: ', num2str(Area_t)])
+    end
 
 
-    % Plot Precision VS Recall
-    fprintf('\nPlotting Precision vs Recall...')
     
-    figure(3)
-    subplot(1,3,1)
-    plot(Recall_h,Precision_h,'b')
-    xlim([0 1])
-    title('Highway: Precision VS Recall depending on Alpha')
-    xlabel('Recall')
-    ylabel('Precision')
-
-    subplot(1,3,2)
-    plot(Recall_f,Precision_f,'r')
-    xlim([0 1])
-    title('Fall: Precision VS Recall depending on Alpha')
-    xlabel('Recall')
-    ylabel('Precision')
-
-    subplot(1,3,3)
-    plot(Recall_t,Precision_t,'g')
-    xlim([0 1])
-    title('Traffic: Precision VS Recall depending on Alpha')
-    xlabel('Recall')
-    ylabel('Precision')
-    
-    
-    
-    
-    
-
-    Area_h = trapz(flip(Recall_h), Precision_h);
-    disp(['Area under the curve for the Highway: ', num2str(Area_h)])
-
-    Area_f = trapz(flip(Recall_f), Precision_f);
-    disp(['Area under the curve for the Fall: ', num2str(Area_f)])
-    
-    Area_t = trapz(flip(Recall_t), Precision_t);
-    disp(['Area under the curve for the Traffic: ', num2str(Area_t)])
-    
-end % end if task1
+end % of task1
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -167,17 +140,27 @@ if doTask4
     disp('--------TASK 4--------');
     
     alpha = [0.1:0.2:5];
-    ro = [0:0.1:0.5];
+    ro = [0:0.2:5];
     
+    total = length(alpha) * length(ro); 
+    parts = round(total / 10);
+    total = total / 100;
+    current = 1;
+    
+    disp('Iterating over alpha and ro...');
     for i = 1:length(alpha)
         for j = 1:length(ro)
 
+            if mod(current, parts) == 0
+                disp([num2str(round(current/total)), '%.. '])
+            end
+            current = current + 1;
+            
             [forEstim_highway,t1_h,t2_h]= task4(seq_input_highway, alpha(i), ro(j), show_videos_4);
             [forEstim_fall,t1_f,t2_f] = task4(seq_input_fall, alpha(i), ro(j), show_videos_4);
             [forEstim_traffic,t1_t,t2_t]= task4(seq_input_traffic, alpha(i), ro(j), show_videos_4);
 
             %% Evaluation functions for TASK 4 (TASK 2 and TASK 3)
-
             [TP_h(i,j), FP_h(i,j), FN_h(i,j), TN_h(i,j), Precision_h(i,j), Accuracy_h(i,j), Specificity_h(i,j), Recall_h(i,j), F1_h(i,j)] = task2(forEstim_highway,gt_input_highway(t1_h:end));
             [TP_f(i,j), FP_f(i,j), FN_f(i,j), TN_f(i,j), Precision_f(i,j), Accuracy_f(i,j), Specificity_f(i,j), Recall_f(i,j), F1_f(i,j)] = task2(forEstim_fall,gt_input_fall(t1_f:end));
             [TP_t(i,j), FP_t(i,j), FN_t(i,j), TN_t(i,j), Precision_t(i,j), Accuracy_t(i,j), Specificity_t(i,j), Recall_t(i,j), F1_t(i,j)] = task2(forEstim_traffic,gt_input_traffic(t1_t:end));
@@ -294,7 +277,7 @@ if doTask4
     close all;
 
     % Plot F1 Score
-    figure(13)
+    figure(1)
     surf(ro,alpha,F1_h)
     xlabel('Ro')
     ylabel('Alpha')
@@ -302,7 +285,7 @@ if doTask4
     legend('F1 Highway')
     title('F1 Score')
     
-    figure(14)
+    figure(2)
     surf(ro,alpha,F1_f)
     xlabel('Ro')
     ylabel('Alpha')
@@ -310,7 +293,7 @@ if doTask4
     legend('F1 Fall')
     title('F1 Score')
     
-    figure(15)
+    figure(3)
     surf(ro,alpha,F1_t)
     xlabel('Ro')
     ylabel('Alpha')
@@ -318,7 +301,7 @@ if doTask4
     legend('F1 Traffic')
     title('F1 Score')
 
-    figure(16)
+    figure(4)
     subplot(1,3,1)
     plot(Recall_h,Precision_h,'b')
     title('Highway: Precision VS Recall depending on Alpha')
@@ -337,14 +320,14 @@ if doTask4
     xlabel('Recall')
     ylabel('Precision')
 
+
+    [max_AUC_h, best_ro_index_h] = calculate_best_ro(Recall_h, Precision_h);
+    [max_AUC_f, best_ro_index_f] = calculate_best_ro(Recall_f, Precision_f);
+    [max_AUC_t, best_ro_index_t] = calculate_best_ro(Recall_t, Precision_t);
     
-    [max_AUC_h, best_ro_index_h] = calculate_best_ro(Recall_h, Precision_h)
-    [max_AUC_f, best_ro_index_f] = calculate_best_ro(Recall_f, Precision_f)
-    [max_AUC_t, best_ro_index_t] = calculate_best_ro(Recall_t, Precision_t)
-    
-    disp(['Area under the curve for the Highway: ', num2str(max_AUC_h)])
-    disp(['Area under the curve for the Fall: ', num2str(max_AUC_f)])
-    disp(['Area under the curve for the Traffic: ', num2str(max_AUC_t)])
+    disp(['Area under the curve for the Highway: ', num2str(max_AUC_h), ' with ro = ', num2str(ro(best_ro_index_h))])
+    disp(['Area under the curve for the Fall: ', num2str(max_AUC_f), ' with ro = ', num2str(ro(best_ro_index_f))])
+    disp(['Area under the curve for the Traffic: ', num2str(max_AUC_t), ' with ro = ', num2str(ro(best_ro_index_t))])
     
     display('\n\nTask 4 done.\n\n')
 end %end task4

@@ -3,9 +3,9 @@ clear all;
 clc;
 
 %% Select execution options
-doTask1 = false;         % Gaussian function to evaluate background
+doTask1 = true;         % Gaussian function to evaluate background
 show_videos_1 = false;  % (From Task1) show back- foreground videos
-doTask2 = true;         % (From Task1) TP, TN, FP, FN, F1score vs alpha
+doTask2 = false;         % (From Task1) TP, TN, FP, FN, F1score vs alpha
 doTask3 = true;         % (From Task1) Precision vs recall, AUC
 
 doTask4 = false;        % Adaptive modelling
@@ -80,7 +80,7 @@ if doTask1
     disp('--------TASK 1--------');
     
     %alpha = [0.1:0.1:5];
-    alpha = [0:0.5:3];
+    alpha = [0:1:5];
 
     for i = 1:length(alpha)
     
@@ -124,18 +124,21 @@ if doTask1
     figure(3)
     subplot(1,3,1)
     plot(Recall_h,Precision_h,'b')
+    xlim([0 1])
     title('Highway: Precision VS Recall depending on Alpha')
     xlabel('Recall')
     ylabel('Precision')
 
     subplot(1,3,2)
     plot(Recall_f,Precision_f,'r')
+    xlim([0 1])
     title('Fall: Precision VS Recall depending on Alpha')
     xlabel('Recall')
     ylabel('Precision')
 
     subplot(1,3,3)
     plot(Recall_t,Precision_t,'g')
+    xlim([0 1])
     title('Traffic: Precision VS Recall depending on Alpha')
     xlabel('Recall')
     ylabel('Precision')

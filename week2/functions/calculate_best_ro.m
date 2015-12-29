@@ -1,7 +1,7 @@
 function [max_AUC, best_index] = calculate_best_ro(Recall, Precision)
 
 max_AUC = -inf;
-best_index = 1
+best_index = 1;
 
 for i = 1:size(Recall,2)
     

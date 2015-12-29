@@ -30,7 +30,6 @@ for f = seq_starting_test : seq_length
 %     pause;
     
     % new mean for bckg pixels is updated using a ro regularizer
-    seq_previous = seq_mean;
     seq_mean(bckg) = ro * double(seq{f}(bckg)) + (1 - ro) * seq_mean(bckg);
     % new deviation
     seq_std(bckg) = sqrt(ro * ((double(seq{f}(bckg)) - seq_mean(bckg)).^2) + (1 - ro) * (seq_std(bckg).^2));

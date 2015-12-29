@@ -262,9 +262,8 @@ if doTask4
     ylabel('Precision')
 
     
-    [max_AUC_h, best_ro_index_h] = calculate_best_ro(Recall_h, Precision_h)
-    [max_AUC_f, best_ro_index_f] = calculate_best_ro(Recall_f, Precision_f)
-    [max_AUC_t, best_ro_index_t] = calculate_best_ro(Recall_t, Precision_t)
+    [max_AUC_h, best_ro_h] = calculate_best_ro(Recall_h, Precision_h)
+    
     
     disp(['Area under the curve for the Highway: ', num2str(Area_h)])
     disp(['Area under the curve for the Fall: ', num2str(Area_f)])

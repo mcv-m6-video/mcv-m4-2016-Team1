@@ -5,7 +5,7 @@ clc;
 %% Select execution options
 doTask1 = false;         % Gaussian function to evaluate background
 show_videos_1 = false;  % (From Task1) show back- foreground videos
-doTask2 = false;         % (From Task1) TP, TN, FP, FN, F1score vs alpha
+doTask2 = true;         % (From Task1) TP, TN, FP, FN, F1score vs alpha
 doTask3 = true;         % (From Task1) Precision vs recall, AUC
 
 doTask4 = true;        % Adaptive modelling
@@ -46,7 +46,6 @@ fileTSet_gt=dir(folderTName_gt);
 %INPUT
 for i=1:length(fileHSet_input)
     seq_input_highway{i}=rgb2gray(imread(strcat('../highway/input/',fileHSet_input(i).name)));
-%     seq_input_highway{i}=imread(strcat('../highway/input/',fileHSet_input(i).name));    
 end
 
 for i=1:length(fileFSet_input)
@@ -55,7 +54,6 @@ end
 
 for i=1:length(fileTSet_input)
     seq_input_traffic{i}=rgb2gray(imread(strcat('../traffic/input/',fileTSet_input(i).name)));
-%     seq_input_traffic{i}=imread(strcat('../traffic/input/',fileTSet_input(i).name));    
 end
 
 
@@ -139,8 +137,8 @@ if doTask4
 
     disp('--------TASK 4--------');
     
-    alpha = [0.1:0.2:5];
-    ro = [0:0.2:5];
+    alpha = [0.1:0.25:1];
+    ro = [0:1:4];
     
     total = length(alpha) * length(ro); 
     parts = round(total / 10);
@@ -167,160 +165,23 @@ if doTask4
 
         end
     end
+    
+    
+    %% Plot data for Task 5:
 
-    %% Plot curves
-
-    % Plot TP, TN, FP, FN
-    figure(1)
-    surf(ro,alpha,TP_h)
-    xlabel('Ro')
-    ylabel('Alpha')
-    zlabel('TP')
-    legend('TP Highway')
-    title('TRUE POSITIVE')
-    
-    figure(2)
-    surf(ro,alpha,TP_f)
-    xlabel('Ro')
-    ylabel('Alpha')
-    zlabel('TP')
-    legend('TP Fall')
-    title('TRUE POSITIVE')
-    
-    figure(3)
-    surf(ro,alpha,TP_t)
-    xlabel('Ro')
-    ylabel('Alpha')
-    zlabel('TP')
-    legend('TP Traffic')
-    title('TRUE POSITIVE')
-    
-    pause
-    
-    figure(1)
-    surf(ro,alpha,TN_h)
-    xlabel('Ro')
-    ylabel('Alpha')
-    zlabel('TN')
-    legend('TN Highway')
-    title('TRUE NEGATIVE')
-    
-    figure(2)
-    surf(ro,alpha,TN_f)
-    xlabel('Ro')
-    ylabel('Alpha')
-    zlabel('TN')
-    legend('TN Fall')
-    title('TRUE NEGATIVE')
-    
-    figure(3)
-    surf(ro,alpha,TN_t)
-    xlabel('Ro')
-    ylabel('Alpha')
-    zlabel('TN')
-    legend('TN Traffic')
-    title('TRUE NEGATIVE')
-
-    pause
-    
-    figure(1)
-    surf(ro,alpha,FP_h)
-    xlabel('Ro')
-    ylabel('Alpha')
-    zlabel('FP')
-    legend('FP Highway')
-    title('FALSE POSITIVE')
-    
-    figure(2)
-    surf(ro,alpha,FP_f)
-    xlabel('Ro')
-    ylabel('Alpha')
-    zlabel('FP')
-    legend('FP Fall')
-    title('FALSE POSITIVE')
-    
-    figure(3)
-    surf(ro,alpha,FP_t)
-    xlabel('Ro')
-    ylabel('Alpha')
-    zlabel('FP')
-    legend('FP Traffic')
-    title('FALSE POSITIVE')
-    
-    pause
-    
-    figure(1)
-    surf(ro,alpha,FN_h)
-    xlabel('Ro')
-    ylabel('Alpha')
-    zlabel('FN')
-    legend('FN Highway')
-    title('FALSE NEGATIVE')
-    
-    figure(2)
-    surf(ro,alpha,FN_f)
-    xlabel('Ro')
-    ylabel('Alpha')
-    zlabel('FN')
-    legend('FN Fall')
-    title('FALSE NEGATIVE')
-    
-    figure(3)
-    surf(ro,alpha,FN_t)
-    xlabel('Ro')
-    ylabel('Alpha')
-    zlabel('FN')
-    legend('FN Traffic')
-    title('FALSE NEGATIVE')
-    
-    pause
+    % Plot TP, TN, FP, FN:
+    plot_surfs_t5(ro, alpha, TP_h, TP_f, TP_t, 'True Positives');
+    plot_surfs_t5(ro, alpha, TN_h, TN_f, TN_t, 'True Negatives');
+    plot_surfs_t5(ro, alpha, FP_h, FP_f, FP_t, 'False Positives');
+    plot_surfs_t5(ro, alpha, FN_h, FN_f, FN_t, 'False Negatives');
     close all;
-
+    
     % Plot F1 Score
-    figure(1)
-    surf(ro,alpha,F1_h)
-    xlabel('Ro')
-    ylabel('Alpha')
-    zlabel('F1')
-    legend('F1 Highway')
-    title('F1 Score')
+    plot_surfs_t5(ro, alpha, F1_h, F1_f, F1_t, 'F 1 score');
+    plot_precision_recall_t3(Recall_h, Recall_f, Recall_t, Precision_h, Precision_f, Precision_t)    
+
+    pause;
     
-    figure(2)
-    surf(ro,alpha,F1_f)
-    xlabel('Ro')
-    ylabel('Alpha')
-    zlabel('F1')
-    legend('F1 Fall')
-    title('F1 Score')
-    
-    figure(3)
-    surf(ro,alpha,F1_t)
-    xlabel('Ro')
-    ylabel('Alpha')
-    zlabel('F1')
-    legend('F1 Traffic')
-    title('F1 Score')
-
-    figure(4)
-    subplot(1,3,1)
-    plot(Recall_h,Precision_h,'b')
-    title('Highway: Precision VS Recall depending on Alpha')
-    xlabel('Recall')
-    ylabel('Precision')
-
-    subplot(1,3,2)
-    plot(Recall_f,Precision_f,'r')
-    title('Fall: Precision VS Recall depending on Alpha')
-    xlabel('Recall')
-    ylabel('Precision')
-
-    subplot(1,3,3)
-    plot(Recall_t,Precision_t,'g')
-    title('Traffic: Precision VS Recall depending on Alpha')
-    xlabel('Recall')
-    ylabel('Precision')
-
-
     [max_AUC_h, best_ro_index_h] = calculate_best_ro(Recall_h, Precision_h);
     [max_AUC_f, best_ro_index_f] = calculate_best_ro(Recall_f, Precision_f);
     [max_AUC_t, best_ro_index_t] = calculate_best_ro(Recall_t, Precision_t);

@@ -5,7 +5,7 @@ clc;
 %% Select execution options
 doTask1 = false;         % Gaussian function to evaluate background
 show_videos_1 = false;  % (From Task1) show back- foreground videos
-doTask2 = false;         % (From Task1) TP, TN, FP, FN, F1score vs alpha
+doTask2 = true;         % (From Task1) TP, TN, FP, FN, F1score vs alpha
 doTask3 = true;         % (From Task1) Precision vs recall, AUC
 
 doTask4 = true;        % Adaptive modelling
@@ -46,7 +46,6 @@ fileTSet_gt=dir(folderTName_gt);
 %INPUT
 for i=1:length(fileHSet_input)
     seq_input_highway{i}=rgb2gray(imread(strcat('../highway/input/',fileHSet_input(i).name)));
-%     seq_input_highway{i}=imread(strcat('../highway/input/',fileHSet_input(i).name));    
 end
 
 for i=1:length(fileFSet_input)
@@ -55,7 +54,6 @@ end
 
 for i=1:length(fileTSet_input)
     seq_input_traffic{i}=rgb2gray(imread(strcat('../traffic/input/',fileTSet_input(i).name)));
-%     seq_input_traffic{i}=imread(strcat('../traffic/input/',fileTSet_input(i).name));    
 end
 
 
@@ -117,14 +115,20 @@ if doTask1
         % Plot Precision VS Recall
         plot_precision_recall_t3(Recall_h, Recall_f, Recall_t, Precision_h, Precision_f, Precision_t);
     
-        % Calculate the area under the
+        % Calculate the area under the curve
+        Area_h = trapz(flip(Recall_h), Precision_h);
+        disp(['Area under the curve for the Highway: ', num2str(Area_h)])
+
+        Area_f = trapz(flip(Recall_f), Precision_f);
+        disp(['Area under the curve for the Fall: ', num2str(Area_f)])
+
+        Area_t = trapz(flip(Recall_t), Precision_t);
+        disp(['Area under the curve for the Traffic: ', num2str(Area_t)])
     end
 
 
-
-
     
-end % end if task1
+end % of task1
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -161,35 +165,13 @@ if doTask4
 
         end
     end
+    
+    
+    %% Plot data for Task 5:
 
-    %% Plot curves
-
-    % Plot TP, TN, FP, FN
-    figure(1)
-    surf(ro,alpha,TP_h)
-    xlabel('Ro')
-    ylabel('Alpha')
-    zlabel('TP')
-    legend('TP Highway')
-    title('TRUE POSITIVE')
+    % Plot TP:
+    plot_surfs_t5(ro, alpha, TP_h, TP_f, TP_t, 'TRUE POSITIVE');
     
-    figure(2)
-    surf(ro,alpha,TP_f)
-    xlabel('Ro')
-    ylabel('Alpha')
-    zlabel('TP')
-    legend('TP Fall')
-    title('TRUE POSITIVE')
-    
-    figure(3)
-    surf(ro,alpha,TP_t)
-    xlabel('Ro')
-    ylabel('Alpha')
-    zlabel('TP')
-    legend('TP Traffic')
-    title('TRUE POSITIVE')
-    
-    pause
     
     figure(1)
     surf(ro,alpha,TN_h)

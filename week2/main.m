@@ -236,6 +236,19 @@ if doTask6
     
     if evaluate_6
         
+    % Bàsicament falta trobar els parametres que van be per a cada 
+    %     sequència amb S&G,  i compararne els resultats amb els millors 
+    %     parametres que teniem fins ara. Ho he deixat tot a punt per ser 
+    %     executat, he modificat el seu codi S&G per a que ens cridi els 
+    %     datasets a on els tenim, i he creat moltes funcions per tenir les 
+    %     coses ordenades. Les més important que heu de saber, 
+    %     load_parameters_t6, que carrega els parametres de S&G i que cadrà 
+    %     anar ajustant per a trobar el millor rendiment. 
+    %     L'ideal seria generar algun bucle com amb les task1 i task4 
+    %     que vagi provant diferents combinacions, pero com que el model 
+    %     triga una mica mes que task1 i task4 us ho deixo a la 
+    %     vostra elecció :P     
+        
     % Aquí faltarà fer l'avaluació per a la configuració S&G concreta.
     % Es poden carregar els paràmetres un cop i despés executar-ho per a
     % differents Alphas com feiem amb la task1 i la task4, de manera que

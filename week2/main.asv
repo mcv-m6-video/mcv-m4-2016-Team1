@@ -236,6 +236,9 @@ if doTask6
     
     if evaluate_6
         
+        
+        
+        
     % Aquí faltarà fer l'avaluació per a la configuració S&G concreta.
     % Es poden carregar els paràmetres un cop i despés executar-ho per a
     % differents Alphas com feiem amb la task1 i la task4, de manera que
@@ -250,7 +253,20 @@ if doTask6
     %
     %   K és el nombre de gaussianes que defineixen un sol pixel. Nosaltres
     %   en teníem tan sols una, ara en tindrem de 3 a 6, definint per
-    %   exemple blancs saturats i verds fosc
+    %   exemple blancs saturats i verds foscos si en un punt hi ha sovint
+    %   una fulla que es mou i deixa sovint un tros de cel blanc lluent.
+    %
+    %   Rho és com a task 4 el pes que té l'ultima deteccio de background
+    %   en aquell punt, és a dir, com més gran, més ràpid aprenem el nou
+    %   background. Si el foreground es detecta com a background i
+    %   l'aprenem com a tal, ja no ho arreglarem mai, i quan torni el
+    %   background l'entendrem com a foreground i mai el reaprendrem bé.
+    %   Per tant, controlar que no sigui massa gran.
+    %
+    %   THFG no recordo haver-lo relacionat amb cap concepte teòric, però
+    %   sembla que sobre 0.25 va bé.
+    %
+    % HAVE FUN!
    
     end    
     

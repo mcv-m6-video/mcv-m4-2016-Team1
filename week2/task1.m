@@ -1,4 +1,4 @@
-function [foreEstim, seq_starting_test, seq_length] = task1(seq,alpha, show_videos)
+function [foreEstim, seq_starting_test] = task1(seq,alpha, show_videos)
 
 % parameters
 % alpha = 1;

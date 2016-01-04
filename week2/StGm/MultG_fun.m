@@ -68,7 +68,8 @@ Frame=double(reshape(Frame,H*W,C));
 % size(mus2)
 % pause;
 
-Sequence=zeros(H,W,T2-T1);
+%Sequence=zeros(H,W,T2-T1);
+Sequence = cell(1,T2-T1);
 
 for t=T1:T2
     
@@ -99,7 +100,7 @@ for t=T1:T2
     Output(:,:) = Tmp(:,1:W,1);
     
     ind=t-T1+1;
-    Sequence(:,:,ind) = Output(:,:);
+    Sequence{ind} = Output(:,:);
     
     % end % if mod 3 to skip frames
 end  

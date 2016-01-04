@@ -16,6 +16,7 @@ doTask5 = true;
 
 doTask6 = true;
 task6_video = 'highway'; % 'fall' 'traffic'
+show_video_6 = true;
 evaluate_6 = true;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

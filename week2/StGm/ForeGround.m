@@ -16,6 +16,8 @@ function [ FG ] = ForeGround(ws,menors,sigmas,K,THFG )
     wsT=ws'; %trasnpogo la matriz (DxK)->(KxD)
     W=wsT(I+repmat((0:D-1)'*K,[1 K]));%es el vector ordenado de ws respecto los valores obtenidos en el sort ws/std. se podría hacer mejor con sub2ind.
     acumW=cumsum(W,2); %suma acumulada tal como marco stGm
+%     size(acumW)
+%     pause;
     mask=(acumW>THFG)'; %comparacion con umbral assignado. es una mascara que contiene 0 en aquellas guassianas ordenadas estan por debejo del umbral.
 
 %    [~,I2]=sort(I,2); %I2 contiene el indice que era menor en el caso anterior. Permite volver al orden original

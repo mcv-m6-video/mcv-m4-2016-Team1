@@ -2,14 +2,21 @@ close all;
 clear all;
 clc;
 
+fprintf('Loading general parameters...\n');
+
 %% Select execution options
 doTask1 = false;         % Gaussian function to evaluate background
 show_videos_1 = false;  % (From Task1) show back- foreground videos
 doTask2 = true;         % (From Task1) TP, TN, FP, FN, F1score vs alpha
 doTask3 = true;         % (From Task1) Precision vs recall, AUC
 
-doTask4 = true;        % Adaptive modelling
+doTask4 = false;        % Adaptive modelling
 show_videos_4 = false;  % (From Task4) show back- foreground videos
+doTask5 = true;
+
+doTask6 = true;
+task6_video = 'highway'; % 'fall' 'traffic'
+evaluate_6 = true;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load Parameters
@@ -166,29 +173,105 @@ if doTask4
         end
     end
     
-    
-    %% Plot data for Task 5:
+    if doTask5
+        %% Plot data for Task 5:
 
-    % Plot TP, TN, FP, FN:
-    plot_surfs_t5(ro, alpha, TP_h, TP_f, TP_t, 'True Positives');
-    plot_surfs_t5(ro, alpha, TN_h, TN_f, TN_t, 'True Negatives');
-    plot_surfs_t5(ro, alpha, FP_h, FP_f, FP_t, 'False Positives');
-    plot_surfs_t5(ro, alpha, FN_h, FN_f, FN_t, 'False Negatives');
-    close all;
-    
-    % Plot F1 Score
-    plot_surfs_t5(ro, alpha, F1_h, F1_f, F1_t, 'F 1 score');
-    plot_precision_recall_t3(Recall_h, Recall_f, Recall_t, Precision_h, Precision_f, Precision_t)    
+        % Plot TP, TN, FP, FN:
+        plot_surfs_t5(ro, alpha, TP_h, TP_f, TP_t, 'True Positives');
+        plot_surfs_t5(ro, alpha, TN_h, TN_f, TN_t, 'True Negatives');
+        plot_surfs_t5(ro, alpha, FP_h, FP_f, FP_t, 'False Positives');
+        plot_surfs_t5(ro, alpha, FN_h, FN_f, FN_t, 'False Negatives');
+        close all;
 
-    pause;
+        % Plot F1 Score
+        plot_surfs_t5(ro, alpha, F1_h, F1_f, F1_t, 'F 1 score');
+        plot_precision_recall_t3(Recall_h, Recall_f, Recall_t, Precision_h, Precision_f, Precision_t)    
+
+        pause;
+
+        [max_AUC_h, best_ro_index_h] = calculate_best_ro(Recall_h, Precision_h);
+        [max_AUC_f, best_ro_index_f] = calculate_best_ro(Recall_f, Precision_f);
+        [max_AUC_t, best_ro_index_t] = calculate_best_ro(Recall_t, Precision_t);
+
+        disp(['Area under the curve for the Highway: ', num2str(max_AUC_h), ' with ro = ', num2str(ro(best_ro_index_h))])
+        disp(['Area under the curve for the Fall: ', num2str(max_AUC_f), ' with ro = ', num2str(ro(best_ro_index_f))])
+        disp(['Area under the curve for the Traffic: ', num2str(max_AUC_t), ' with ro = ', num2str(ro(best_ro_index_t))])
+
+    end % doTask5
     
-    [max_AUC_h, best_ro_index_h] = calculate_best_ro(Recall_h, Precision_h);
-    [max_AUC_f, best_ro_index_f] = calculate_best_ro(Recall_f, Precision_f);
-    [max_AUC_t, best_ro_index_t] = calculate_best_ro(Recall_t, Precision_t);
-    
-    disp(['Area under the curve for the Highway: ', num2str(max_AUC_h), ' with ro = ', num2str(ro(best_ro_index_h))])
-    disp(['Area under the curve for the Fall: ', num2str(max_AUC_f), ' with ro = ', num2str(ro(best_ro_index_f))])
-    disp(['Area under the curve for the Traffic: ', num2str(max_AUC_t), ' with ro = ', num2str(ro(best_ro_index_t))])
-    
-    display('\n\nTask 4 done.\n\n')
+    fprintf('\n\nTask 4 done.\n\n')
 end %end task4
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% TASK 6: Stauffer and Grimson implementation
+
+if doTask6
+    disp('-------- TASK 6 --------');
+    
+    
+    % Load the parameters. Some of them are specific for each scene
+    [Alpha, T1, T2, K, Rho, THFG] = load_parameters_t6(task6_video);
+    
+    % Run the S&G implementation for the given parameters
+    fprintf('Running S&G implementation...\n');
+    [Sequence] = MultG_fun(Alpha, T1, T2, K, Rho, THFG, task6_video);
+    
+    % Show estimated scene
+    if show_video_6
+        
+        % Quick preview
+        for p = 1:((T2-T1)/2)    
+            imshow(Sequence(:,:,p*2));
+            pause(0.001)
+        end
+        
+        % Slow visualisation
+%         for p = 1:(T2-T1)    
+%             imshow(Sequence(:,:,p));
+%             pause(0.01)
+%         end
+    end
+    
+    
+    if evaluate_6
+        
+    % Aquí faltarà fer l'avaluació per a la configuració S&G concreta.
+    % Es poden carregar els paràmetres un cop i despés executar-ho per a
+    % differents Alphas com feiem amb la task1 i la task4, de manera que
+    % podrem tenir gràfics més complerts sobre l'evolució dels resultats en
+    % funció de alpha, però recordeu que aquest model també varia en funció
+    % dels altres paràmetres modificables a load_parameters_t6. Aquests
+    % paràmetres també tindran un rendiment MOLT diferent en funció del
+    % video que fem servir. Cal entrendre bé que:
+    %
+    %   Alhpa és el threshold de N de desviació estandard on acceptem que
+    %   un pixel pertany a una gaussiana (1-4), veure surfs en tasca 4.
+    %
+    %   K és el nombre de gaussianes que defineixen un sol pixel. Nosaltres
+    %   en teníem tan sols una, ara en tindrem de 3 a 6, definint per
+    %   exemple blancs saturats i verds foscos si en un punt hi ha sovint
+    %   una fulla que es mou i deixa sovint un tros de cel blanc lluent.
+    %
+    %   Rho és com a task 4 el pes que té l'ultima deteccio de background
+    %   en aquell punt, és a dir, com més gran, més ràpid aprenem el nou
+    %   background. Si el foreground es detecta com a background i
+    %   l'aprenem com a tal, ja no ho arreglarem mai, i quan torni el
+    %   background l'entendrem com a foreground i mai el reaprendrem bé.
+    %   Per tant, controlar que no sigui massa gran.
+    %
+    %   THFG no recordo haver-lo relacionat amb cap concepte teòric, però
+    %   sembla que sobre 0.25 va bé.
+    %
+    % HAVE FUN!
+   
+    end    
+    
+    
+    fprintf('\nTask 6 done.\n')
+end % task 6
+
+
+
+
+fprintf('\n FINISHED.\n')

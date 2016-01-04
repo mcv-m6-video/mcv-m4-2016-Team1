@@ -47,18 +47,32 @@ Fold = [video];
             end
         end
  end
+
     
-    Frame(:,:,1)=rgb2gray(imread(['./' Fold '/' VideoInFolder '/'  begin num2str(T1) '.jpg'])); 
-    Frame(:,:,2)=rgb2gray(imread(['./' Fold '/' VideoInFolder '/'  begin num2str(T1) '.jpg'])); 
-    Frame(:,:,3)=rgb2gray(imread(['./' Fold '/' VideoInFolder '/'  begin num2str(T1) '.jpg'])); 
+    Frame(:,:,1)=rgb2gray(imread(['../' Fold '/' VideoInFolder '/'  begin num2str(T1) '.jpg'])); 
+    Frame(:,:,2)=rgb2gray(imread(['../' Fold '/' VideoInFolder '/'  begin num2str(T1) '.jpg'])); 
+    Frame(:,:,3)=rgb2gray(imread(['../' Fold '/' VideoInFolder '/'  begin num2str(T1) '.jpg'])); 
+
+%     imshow(Frame); pause;
+%     figure(); imshow(uint8(Frame(:,:,1))); pause;
+%     figure(); imshow(uint8(Frame(:,:,2))); pause;
+%     figure(); imshow(uint8(Frame(:,:,3))); pause;
     
 [H,W,C]=size(Frame);
 Frame=double(reshape(Frame,H*W,C));
 [ws,sigmas,mus] = StGm( Frame,K,8);   % Initialization process
 
+% disp('Initialized');
+% size(ws2)
+% size(sigmas2)
+% size(mus2)
+% pause;
+
 Sequence=zeros(H,W,T2-T1);
 
 for t=T1:T2
+    
+   %if mod(t,3) == 0;
     
    if 0<t && t<10
         begin='in00000';
@@ -71,19 +85,21 @@ for t=T1:T2
         end
    end
     Frame=zeros(H,W,C);
-    Frame(:,:,1)=rgb2gray(imread(['./' Fold '/' VideoInFolder '/'  begin num2str(t) '.jpg'])); 
-    Frame(:,:,2)=rgb2gray(imread(['./' Fold '/' VideoInFolder '/'  begin num2str(t) '.jpg'])); 
-    Frame(:,:,3)=rgb2gray(imread(['./' Fold '/' VideoInFolder '/'  begin num2str(t) '.jpg'])); 
+    Frame(:,:,1)=rgb2gray(imread(['../' Fold '/' VideoInFolder '/'  begin num2str(t) '.jpg'])); 
+    Frame(:,:,2)=rgb2gray(imread(['../' Fold '/' VideoInFolder '/'  begin num2str(t) '.jpg'])); 
+    Frame(:,:,3)=rgb2gray(imread(['../' Fold '/' VideoInFolder '/'  begin num2str(t) '.jpg'])); 
     
     Frame1D=double(reshape(Frame,H*W,3));    
     % Update of mixture model
     [ ws,sigmas,mus,menors ] = StGm(Frame1D,K,8,0.05,Rho,Threshold,sigmas, mus,ws);   
     % Foreground/Background detection
     [ FG ]      = ForeGround(ws,menors,sigmas,K,THFG );                                 
+       
     Tmp         = [repmat(reshape(FG,H,W),[1 1 3])*255 reshape(Frame,H,W,3)];
     Output(:,:) = Tmp(:,1:W,1);
     
     ind=t-T1+1;
     Sequence(:,:,ind) = Output(:,:);
     
+    % end % if mod 3 to skip frames
 end  

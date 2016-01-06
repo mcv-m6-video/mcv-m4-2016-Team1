@@ -29,7 +29,7 @@ for f = seq_starting_test : seq_length
     seq_std(bckg) = sqrt(ro * ((double(seq{f}(bckg)) - seq_mean(bckg)).^2) + (1 - ro) * (seq_std(bckg).^2));
      
     % We pick as foreground those pixels which differ too much from the mean
-    foreEstim{f-seq_starting_test+1} = (double(seq{f}) - seq_mean) >= alpha.*(seq_std + 2); 
+    foreEstim{f-seq_starting_test+1} = abs(double(seq{f}) - seq_mean) >= alpha.*(seq_std + 2); 
         
     if show_videos
         subplot(2,2,1)

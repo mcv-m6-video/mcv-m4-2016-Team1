@@ -327,18 +327,18 @@ if doTask6
                     
                     % Show estimated scene
                     % Quick preview
-%                     for p = 1:length(SG_forEstim_highway) %((T2_h-T1_h)/2)
-%                         imshow(SG_forEstim_highway{p});
-%                         pause(0.001)
-%                     end
-%                     for p = 1:length(SG_forEstim_fall)%((T2_f-T1_f)/2)
-%                         imshow(SG_forEstim_fall{p});
-%                         pause(0.001)
-%                     end
-%                     for p = 1:length(SG_forEstim_traffic)%((T2_t-T1_t)/2)
-%                         imshow(SG_forEstim_traffic{p});
-%                         pause(0.001)
-%                     end
+                    for p = 1:length(SG_forEstim_highway) %((T2_h-T1_h)/2)
+                        imshow(SG_forEstim_highway{p});
+                        pause(0.001)
+                    end
+                    for p = 1:length(SG_forEstim_fall)%((T2_f-T1_f)/2)
+                        imshow(SG_forEstim_fall{p});
+                        pause(0.001)
+                    end
+                    for p = 1:length(SG_forEstim_traffic)%((T2_t-T1_t)/2)
+                        imshow(SG_forEstim_traffic{p});
+                        pause(0.001)
+                    end
                     
                     
                     fprintf('Evaluate S&G implementation...\n');

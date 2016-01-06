@@ -30,7 +30,7 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-function [Sequence] = MultG_fun(Threshold,T1,T2,K,Rho,THFG,video)
+function [Sequence] = MultG_fun(Threshold,T1,T2,K,Rho,THFG,video,color_space)
 
 VideoInFolder = ['input']; 
 Fold = [video];
@@ -48,11 +48,15 @@ Fold = [video];
         end
  end
 
-    
-    Frame(:,:,1)=rgb2gray(imread(['../' Fold '/' VideoInFolder '/'  begin num2str(T1) '.jpg'])); 
-    Frame(:,:,2)=rgb2gray(imread(['../' Fold '/' VideoInFolder '/'  begin num2str(T1) '.jpg'])); 
-    Frame(:,:,3)=rgb2gray(imread(['../' Fold '/' VideoInFolder '/'  begin num2str(T1) '.jpg'])); 
-
+    if(strcmp(color_space,'Gray'))
+        Frame=repmat(rgb2gray(imread(['../', Fold, '/', VideoInFolder, '/', begin, num2str(T1), '.jpg'])), [1,1,3]);
+    elseif(strcmp(color_space,'RGB'))
+        Frame=imread(['../', Fold, '/', VideoInFolder, '/', begin, num2str(T1), '.jpg']);
+    elseif(strcmp(color_space,'HSV'))
+        Frame=uint8(255*rgb2hsv(imread(['../', Fold, '/', VideoInFolder, '/', begin, num2str(T1), '.jpg'])));
+    elseif(strcmp(color_space,'YUV'))
+        Frame=rgb2ycbcr(imread(['../', Fold, '/', VideoInFolder, '/', begin, num2str(T1), '.jpg']));
+    end
 %     imshow(Frame); pause;
 %     figure(); imshow(uint8(Frame(:,:,1))); pause;
 %     figure(); imshow(uint8(Frame(:,:,2))); pause;
@@ -86,9 +90,15 @@ for t=T1:T2
         end
    end
     Frame=zeros(H,W,C);
-    Frame(:,:,1)=rgb2gray(imread(['../' Fold '/' VideoInFolder '/'  begin num2str(t) '.jpg'])); 
-    Frame(:,:,2)=rgb2gray(imread(['../' Fold '/' VideoInFolder '/'  begin num2str(t) '.jpg'])); 
-    Frame(:,:,3)=rgb2gray(imread(['../' Fold '/' VideoInFolder '/'  begin num2str(t) '.jpg'])); 
+    if(strcmp(color_space,'Gray'))
+        Frame=repmat(rgb2gray(imread(['../', Fold, '/', VideoInFolder, '/', begin, num2str(t), '.jpg'])), [1,1,3]);
+    elseif(strcmp(color_space,'RGB'))
+        Frame=imread(['../', Fold, '/', VideoInFolder, '/', begin, num2str(t), '.jpg']);
+    elseif(strcmp(color_space,'HSV'))
+        Frame=uint8(255*rgb2hsv(imread(['../', Fold, '/', VideoInFolder, '/', begin, num2str(t), '.jpg'])));
+    elseif(strcmp(color_space,'YUV'))
+        Frame=rgb2ycbcr(imread(['../', Fold, '/', VideoInFolder, '/', begin, num2str(t), '.jpg']));
+    end
     
     Frame1D=double(reshape(Frame,H*W,3));    
     % Update of mixture model

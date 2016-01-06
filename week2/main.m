@@ -6,7 +6,7 @@ fprintf('Loading general parameters...\n');
 
 %% Select execution options
 
-color_space = 'YUV'; % 'RGB', 'Gray', 'HSV', 'YUV'
+color_space = 'Gray'; % 'RGB', 'Gray', 'HSV', 'YUV'
 
 doTask1 = false;         % Gaussian function to evaluate background
 show_videos_1 = false;  % (From Task1) show back- foreground videos
@@ -176,36 +176,36 @@ if doTask4
     disp('--------TASK 4--------');
     
     alpha = [0.1:0.25:5];
-    ro = [0.1:0.1:1];
+    rho = [0.1:0.1:1];
     %     alpha = 2;
     %     ro = 0.5;
     
-    total = length(alpha) * length(ro);
+    total = length(alpha) * length(rho);
     parts = round(total / 10);
     total = total / 100;
     current = 1;
     
-    [RGM_TP_h, RGM_FP_h, RGM_FN_h, RGM_TN_h, RGM_Precision_h, RGM_Accuracy_h, RGM_Specificity_h, RGM_Recall_h, RGM_F1_h] = deal(zeros(length(alpha),length(ro)));
-    [RGM_TP_f, RGM_FP_f, RGM_FN_f, RGM_TN_f, RGM_Precision_f, RGM_Accuracy_f, RGM_Specificity_f, RGM_Recall_f, RGM_F1_f] = deal(zeros(length(alpha),length(ro)));
-    [RGM_TP_t, RGM_FP_t, RGM_FN_t, RGM_TN_t, RGM_Precision_t, RGM_Accuracy_t, RGM_Specificity_t, RGM_Recall_t, RGM_F1_t] = deal(zeros(length(alpha),length(ro)));
+    [RGM_TP_h, RGM_FP_h, RGM_FN_h, RGM_TN_h, RGM_Precision_h, RGM_Accuracy_h, RGM_Specificity_h, RGM_Recall_h, RGM_F1_h] = deal(zeros(length(alpha),length(rho)));
+    [RGM_TP_f, RGM_FP_f, RGM_FN_f, RGM_TN_f, RGM_Precision_f, RGM_Accuracy_f, RGM_Specificity_f, RGM_Recall_f, RGM_F1_f] = deal(zeros(length(alpha),length(rho)));
+    [RGM_TP_t, RGM_FP_t, RGM_FN_t, RGM_TN_t, RGM_Precision_t, RGM_Accuracy_t, RGM_Specificity_t, RGM_Recall_t, RGM_F1_t] = deal(zeros(length(alpha),length(rho)));
     
-    disp('Iterating over alpha and ro...');
+    disp('Iterating over alpha and rho...');
     
     if show_videos_4
         for i = 1:length(alpha)
-            [RGM_TP_h_aux, RGM_FP_h_aux, RGM_FN_h_aux, RGM_TN_h_aux, RGM_Precision_h_aux, RGM_Accuracy_h_aux, RGM_Specificity_h_aux, RGM_Recall_h_aux, RGM_F1_h_aux] = deal(zeros(1,length(ro)));
-            [RGM_TP_f_aux, RGM_FP_f_aux, RGM_FN_f_aux, RGM_TN_f_aux, RGM_Precision_f_aux, RGM_Accuracy_f_aux, RGM_Specificity_f_aux, RGM_Recall_f_aux, RGM_F1_f_aux] = deal(zeros(1,length(ro)));
-            [RGM_TP_t_aux, RGM_FP_t_aux, RGM_FN_t_aux, RGM_TN_t_aux, RGM_Precision_t_aux, RGM_Accuracy_t_aux, RGM_Specificity_t_aux, RGM_Recall_t_aux, RGM_F1_t_aux] = deal(zeros(1,length(ro)));
-            for j = 1:length(ro)
+            [RGM_TP_h_aux, RGM_FP_h_aux, RGM_FN_h_aux, RGM_TN_h_aux, RGM_Precision_h_aux, RGM_Accuracy_h_aux, RGM_Specificity_h_aux, RGM_Recall_h_aux, RGM_F1_h_aux] = deal(zeros(1,length(rho)));
+            [RGM_TP_f_aux, RGM_FP_f_aux, RGM_FN_f_aux, RGM_TN_f_aux, RGM_Precision_f_aux, RGM_Accuracy_f_aux, RGM_Specificity_f_aux, RGM_Recall_f_aux, RGM_F1_f_aux] = deal(zeros(1,length(rho)));
+            [RGM_TP_t_aux, RGM_FP_t_aux, RGM_FN_t_aux, RGM_TN_t_aux, RGM_Precision_t_aux, RGM_Accuracy_t_aux, RGM_Specificity_t_aux, RGM_Recall_t_aux, RGM_F1_t_aux] = deal(zeros(1,length(rho)));
+            for j = 1:length(rho)
                 
                 %             if mod(current, parts) == 0
                 %                 disp([num2str(round(current/total)), '%.. '])
                 %             end
                 %             current = current + 1;
                 
-                [RGM_forEstim_highway,t1_h]= task4(seq_input_highway, alpha(i), ro(j), show_videos_4, color_space);
-                [RGM_forEstim_fall,t1_f] = task4(seq_input_fall, alpha(i), ro(j), show_videos_4, color_space);
-                [RGM_forEstim_traffic,t1_t]= task4(seq_input_traffic, alpha(i), ro(j), show_videos_4, color_space);
+                [RGM_forEstim_highway,t1_h]= task4(seq_input_highway, alpha(i), rho(j), show_videos_4, color_space);
+                [RGM_forEstim_fall,t1_f] = task4(seq_input_fall, alpha(i), rho(j), show_videos_4, color_space);
+                [RGM_forEstim_traffic,t1_t]= task4(seq_input_traffic, alpha(i), rho(j), show_videos_4, color_space);
                 
                 [RGM_TP_h_aux(j), RGM_FP_h_aux(j), RGM_FN_h_aux(j), RGM_TN_h_aux(j), RGM_Precision_h_aux(j), RGM_Accuracy_h_aux(j), RGM_Specificity_h_aux(j), RGM_Recall_h_aux(j), RGM_F1_h_aux(j)] = task2(RGM_forEstim_highway,gt_input_highway(t1_h:end));
                 [RGM_TP_f_aux(j), RGM_FP_f_aux(j), RGM_FN_f_aux(j), RGM_TN_f_aux(j), RGM_Precision_f_aux(j), RGM_Accuracy_f_aux(j), RGM_Specificity_f_aux(j), RGM_Recall_f_aux(j), RGM_F1_f_aux(j)] = task2(RGM_forEstim_fall,gt_input_fall(t1_f:end));
@@ -221,19 +221,19 @@ if doTask4
     else
         tic
         parfor i = 1:length(alpha)
-            [RGM_TP_h_aux, RGM_FP_h_aux, RGM_FN_h_aux, RGM_TN_h_aux, RGM_Precision_h_aux, RGM_Accuracy_h_aux, RGM_Specificity_h_aux, RGM_Recall_h_aux, RGM_F1_h_aux] = deal(zeros(1,length(ro)));
-            [RGM_TP_f_aux, RGM_FP_f_aux, RGM_FN_f_aux, RGM_TN_f_aux, RGM_Precision_f_aux, RGM_Accuracy_f_aux, RGM_Specificity_f_aux, RGM_Recall_f_aux, RGM_F1_f_aux] = deal(zeros(1,length(ro)));
-            [RGM_TP_t_aux, RGM_FP_t_aux, RGM_FN_t_aux, RGM_TN_t_aux, RGM_Precision_t_aux, RGM_Accuracy_t_aux, RGM_Specificity_t_aux, RGM_Recall_t_aux, RGM_F1_t_aux] = deal(zeros(1,length(ro)));
-            for j = 1:length(ro)
+            [RGM_TP_h_aux, RGM_FP_h_aux, RGM_FN_h_aux, RGM_TN_h_aux, RGM_Precision_h_aux, RGM_Accuracy_h_aux, RGM_Specificity_h_aux, RGM_Recall_h_aux, RGM_F1_h_aux] = deal(zeros(1,length(rho)));
+            [RGM_TP_f_aux, RGM_FP_f_aux, RGM_FN_f_aux, RGM_TN_f_aux, RGM_Precision_f_aux, RGM_Accuracy_f_aux, RGM_Specificity_f_aux, RGM_Recall_f_aux, RGM_F1_f_aux] = deal(zeros(1,length(rho)));
+            [RGM_TP_t_aux, RGM_FP_t_aux, RGM_FN_t_aux, RGM_TN_t_aux, RGM_Precision_t_aux, RGM_Accuracy_t_aux, RGM_Specificity_t_aux, RGM_Recall_t_aux, RGM_F1_t_aux] = deal(zeros(1,length(rho)));
+            for j = 1:length(rho)
                 
                 %             if mod(current, parts) == 0
                 %                 disp([num2str(round(current/total)), '%.. '])
                 %             end
                 %             current = current + 1;
                 
-                [RGM_forEstim_highway,t1_h]= task4(seq_input_highway, alpha(i), ro(j), show_videos_4, color_space);
-                [RGM_forEstim_fall,t1_f] = task4(seq_input_fall, alpha(i), ro(j), show_videos_4, color_space);
-                [RGM_forEstim_traffic,t1_t]= task4(seq_input_traffic, alpha(i), ro(j), show_videos_4, color_space);
+                [RGM_forEstim_highway,t1_h]= task4(seq_input_highway, alpha(i), rho(j), show_videos_4, color_space);
+                [RGM_forEstim_fall,t1_f] = task4(seq_input_fall, alpha(i), rho(j), show_videos_4, color_space);
+                [RGM_forEstim_traffic,t1_t]= task4(seq_input_traffic, alpha(i), rho(j), show_videos_4, color_space);
                 
                 [RGM_TP_h_aux(j), RGM_FP_h_aux(j), RGM_FN_h_aux(j), RGM_TN_h_aux(j), RGM_Precision_h_aux(j), RGM_Accuracy_h_aux(j), RGM_Specificity_h_aux(j), RGM_Recall_h_aux(j), RGM_F1_h_aux(j)] = task2(RGM_forEstim_highway,gt_input_highway(t1_h:end));
                 [RGM_TP_f_aux(j), RGM_FP_f_aux(j), RGM_FN_f_aux(j), RGM_TN_f_aux(j), RGM_Precision_f_aux(j), RGM_Accuracy_f_aux(j), RGM_Specificity_f_aux(j), RGM_Recall_f_aux(j), RGM_F1_f_aux(j)] = task2(RGM_forEstim_fall,gt_input_fall(t1_f:end));
@@ -252,22 +252,25 @@ if doTask4
     % 708.768734 secs no parfor
     % 503.419721 secs 4 threads
     % 486.717056 secs 8 threads
-    disp(['max F1 highway: ', num2str(max(RGM_F1_h(:)))]);
-    disp(['max F1 fall: ', num2str(max(RGM_F1_f(:)))]);
-    disp(['max F1 traffic: ', num2str(max(RGM_F1_t(:)))]);
+    [maxF1h,id] = max(RGM_F1_h(:)); [idi,idj] = ind2sub(size(RGM_F1_h),id); good_alpha = alpha(idi); good_rho = rho(idj);
+    disp(['max F1 highway: ', num2str(maxF1h), ' in alpha: ',num2str(good_alpha),' and rho: ',num2str(good_rho)]);
+    [maxF1f,id] = max(RGM_F1_f(:)); [idi,idj] = ind2sub(size(RGM_F1_f),id); good_alpha = alpha(idi); good_rho = rho(idj);
+    disp(['max F1 fall: ', num2str(max(maxF1f)), ' in alpha: ',num2str(good_alpha),' and rho: ',num2str(good_rho)]);
+    [maxF1t,id] = max(RGM_F1_t(:)); [idi,idj] = ind2sub(size(RGM_F1_t),id); good_alpha = alpha(idi); good_rho = rho(idj);
+    disp(['max F1 traffic: ', num2str(max(maxF1t)), ' in alpha: ',num2str(good_alpha),' and rho: ',num2str(good_rho)]);
     
-    if doTask5 && length(alpha)>1 && length(ro)>1
+    if doTask5 && length(alpha)>1 && length(rho)>1
         %% Plot data for Task 5:
         
         % Plot TP, TN, FP, FN:
-        plot_surfs_t5(ro, alpha, RGM_TP_h, RGM_TP_f, RGM_TP_t, 'True Positives');
-        plot_surfs_t5(ro, alpha, RGM_TN_h, RGM_TN_f, RGM_TN_t, 'True Negatives');
-        plot_surfs_t5(ro, alpha, RGM_FP_h, RGM_FP_f, RGM_FP_t, 'False Positives');
-        plot_surfs_t5(ro, alpha, RGM_FN_h, RGM_FN_f, RGM_FN_t, 'False Negatives');
+        plot_surfs_t5(rho, alpha, RGM_TP_h, RGM_TP_f, RGM_TP_t, 'True Positives');
+        plot_surfs_t5(rho, alpha, RGM_TN_h, RGM_TN_f, RGM_TN_t, 'True Negatives');
+        plot_surfs_t5(rho, alpha, RGM_FP_h, RGM_FP_f, RGM_FP_t, 'False Positives');
+        plot_surfs_t5(rho, alpha, RGM_FN_h, RGM_FN_f, RGM_FN_t, 'False Negatives');
         close all;
         
         % Plot F1 Score
-        plot_surfs_t5(ro, alpha, RGM_F1_h, RGM_F1_f, RGM_F1_t, 'F 1 score');
+        plot_surfs_t5(rho, alpha, RGM_F1_h, RGM_F1_f, RGM_F1_t, 'F 1 score');
         plot_precision_recall_t3(RGM_Recall_h, RGM_Recall_f, RGM_Recall_t, RGM_Precision_h, RGM_Precision_f, RGM_Precision_t);
         
         pause;
@@ -276,9 +279,9 @@ if doTask4
         [max_AUC_f, best_ro_index_f] = calculate_best_ro(RGM_Recall_f, RGM_Precision_f);
         [max_AUC_t, best_ro_index_t] = calculate_best_ro(RGM_Recall_t, RGM_Precision_t);
         
-        disp(['Area under the curve for the Highway: ', num2str(max_AUC_h), ' with ro = ', num2str(ro(best_ro_index_h))]);
-        disp(['Area under the curve for the Fall: ', num2str(max_AUC_f), ' with ro = ', num2str(ro(best_ro_index_f))]);
-        disp(['Area under the curve for the Traffic: ', num2str(max_AUC_t), ' with ro = ', num2str(ro(best_ro_index_t))]);
+        disp(['Area under the curve for the Highway: ', num2str(max_AUC_h), ' with ro = ', num2str(rho(best_ro_index_h))]);
+        disp(['Area under the curve for the Fall: ', num2str(max_AUC_f), ' with ro = ', num2str(rho(best_ro_index_f))]);
+        disp(['Area under the curve for the Traffic: ', num2str(max_AUC_t), ' with ro = ', num2str(rho(best_ro_index_t))]);
         
     end % doTask5
     
@@ -397,32 +400,32 @@ if doTask6
         % Plot TP, TN, FP, FN for each K:
         for k = 1:length(K_h)
             disp(['for K = ', num2str(K_h(k)),'...\n']);
-            plot_surfs_t5(Rho_h(1:end-1), Alpha_h, squeeze(SG_TP_h(k,:,1:end-1)), squeeze(SG_TP_f(k,:,1:end-1)), squeeze(SG_TP_t(k,:,1:end-1)), 'True Positives');
-            plot_surfs_t5(Rho_h(1:end-1), Alpha_h, squeeze(SG_TN_h(k,:,1:end-1)), squeeze(SG_TN_f(k,:,1:end-1)), squeeze(SG_TN_t(k,:,1:end-1)), 'True Negatives');
-            plot_surfs_t5(Rho_h(1:end-1), Alpha_h, squeeze(SG_FP_h(k,:,1:end-1)), squeeze(SG_FP_f(k,:,1:end-1)), squeeze(SG_FP_t(k,:,1:end-1)), 'False Positives');
-            plot_surfs_t5(Rho_h(1:end-1), Alpha_h, squeeze(SG_FN_h(k,:,1:end-1)), squeeze(SG_FN_f(k,:,1:end-1)), squeeze(SG_FN_t(k,:,1:end-1)), 'False Negatives');
+            plot_surfs_t5(Rho_h(1:end), Alpha_h, squeeze(SG_TP_h(k,:,1:end)), squeeze(SG_TP_f(k,:,1:end)), squeeze(SG_TP_t(k,:,1:end)), 'True Positives');
+            plot_surfs_t5(Rho_h(1:end), Alpha_h, squeeze(SG_TN_h(k,:,1:end)), squeeze(SG_TN_f(k,:,1:end)), squeeze(SG_TN_t(k,:,1:end)), 'True Negatives');
+            plot_surfs_t5(Rho_h(1:end), Alpha_h, squeeze(SG_FP_h(k,:,1:end)), squeeze(SG_FP_f(k,:,1:end)), squeeze(SG_FP_t(k,:,1:end)), 'False Positives');
+            plot_surfs_t5(Rho_h(1:end), Alpha_h, squeeze(SG_FN_h(k,:,1:end)), squeeze(SG_FN_f(k,:,1:end)), squeeze(SG_FN_t(k,:,1:end)), 'False Negatives');
             
             close all;
             
             % Plot F1 Score for each K:
-            plot_surfs_t5(Rho_h(1:end-1), Alpha_h, squeeze(SG_F1_h(k,:,1:end-1)), squeeze(SG_F1_f(k,:,1:end-1)), squeeze(SG_F1_t(k,:,1:end-1)), 'F 1 score');
-            plot_precision_recall_t3(squeeze(SG_Recall_h(k,:,1:end-1)), squeeze(SG_Recall_f(k,:,1:end-1)), squeeze(SG_Recall_t(k,:,1:end-1)), squeeze(SG_Precision_h(k,:,1:end-1)), squeeze(SG_Precision_f(k,:,1:end-1)), squeeze(SG_Precision_t(k,:,1:end-1)))
+            plot_surfs_t5(Rho_h(1:end), Alpha_h, squeeze(SG_F1_h(k,:,1:end)), squeeze(SG_F1_f(k,:,1:end)), squeeze(SG_F1_t(k,:,1:end)), 'F 1 score');
+            plot_precision_recall_t3(squeeze(SG_Recall_h(k,:,1:end)), squeeze(SG_Recall_f(k,:,1:end)), squeeze(SG_Recall_t(k,:,1:end)), squeeze(SG_Precision_h(k,:,1:end)), squeeze(SG_Precision_f(k,:,1:end)), squeeze(SG_Precision_t(k,:,1:end)))
             %
             pause;
             
             % Best F1
-            [max_F1_h(k), best_ro_index_h, best_alpha_index_h] = calculate_best_ro_alpha(squeeze(SG_F1_h(k,:,1:end-1)));
-            [max_F1_f(k), best_ro_index_f, best_alpha_index_f] = calculate_best_ro_alpha(squeeze(SG_F1_f(k,:,1:end-1)));
-            [max_F1_t(k), best_ro_index_t, best_alpha_index_t] = calculate_best_ro_alpha(squeeze(SG_F1_t(k,:,1:end-1)));
+            [max_F1_h(k), best_ro_index_h, best_alpha_index_h] = calculate_best_ro_alpha(squeeze(SG_F1_h(k,:,1:end)));
+            [max_F1_f(k), best_ro_index_f, best_alpha_index_f] = calculate_best_ro_alpha(squeeze(SG_F1_f(k,:,1:end)));
+            [max_F1_t(k), best_ro_index_t, best_alpha_index_t] = calculate_best_ro_alpha(squeeze(SG_F1_t(k,:,1:end)));
             
             disp(['Max F1 Score for the Highway: ', num2str(max_F1_h(k)), ' with rho = ', num2str(Rho_h(best_ro_index_h)), ' and alpha =', num2str(Alpha_h(best_alpha_index_h))])
             disp(['Max F1 Score for the Fall: ', num2str(max_F1_f(k)), ' with rho = ', num2str(Rho_f(best_ro_index_f)), ' and alpha =', num2str(Alpha_f(best_alpha_index_f))])
             disp(['Max F1 Score for the Traffic: ', num2str(max_F1_t(k)), ' with rho = ', num2str(Rho_t(best_ro_index_t)), ' and alpha =', num2str(Alpha_t(best_alpha_index_t))])
             
             % Best AUC
-            [max_AUC_h(k), best_ro_index_h] = calculate_best_ro(squeeze(SG_Recall_h(k,:,1:end-1)), squeeze(SG_Precision_h(k,:,1:end-1)));
-            [max_AUC_f(k), best_ro_index_f] = calculate_best_ro(squeeze(SG_Recall_f(k,:,1:end-1)), squeeze(SG_Precision_f(k,:,1:end-1)));
-            [max_AUC_t(k), best_ro_index_t] = calculate_best_ro(squeeze(SG_Recall_t(k,:,1:end-1)), squeeze(SG_Precision_t(k,:,1:end-1)));
+            [max_AUC_h(k), best_ro_index_h] = calculate_best_ro(squeeze(SG_Recall_h(k,:,1:end)), squeeze(SG_Precision_h(k,:,1:end)));
+            [max_AUC_f(k), best_ro_index_f] = calculate_best_ro(squeeze(SG_Recall_f(k,:,1:end)), squeeze(SG_Precision_f(k,:,1:end)));
+            [max_AUC_t(k), best_ro_index_t] = calculate_best_ro(squeeze(SG_Recall_t(k,:,1:end)), squeeze(SG_Precision_t(k,:,1:end)));
             
             disp(['Area under the curve for the Highway: ', num2str(max_AUC_h(k)), ' with ro = ', num2str(Rho_h(best_ro_index_h))])
             disp(['Area under the curve for the Fall: ', num2str(max_AUC_f(k)), ' with ro = ', num2str(Rho_f(best_ro_index_f))])

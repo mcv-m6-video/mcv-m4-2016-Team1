@@ -5,21 +5,21 @@ clc;
 fprintf('Loading general parameters...\n');
 
 %% Select execution options
-color_space = 'RGB'; % 'RGB', 'Gray', 'HSV', 'YUV'
+color_space = 'Gray'; % 'RGB', 'Gray', 'HSV', 'YUV'
 
 doTask1 = false;         % Gaussian function to evaluate background
 show_videos_1 = false;  % (From Task1) show back- foreground videos
 doTask2 = true;         % (From Task1) TP, TN, FP, FN, F1score vs alpha
 doTask3 = true;         % (From Task1) Precision vs recall, AUC
 
-doTask4 = true;        % Adaptive modelling
+doTask4 = false;        % Adaptive modelling
 show_videos_4 = false;  % (From Task4) show back- foreground videos
 doTask5 = false;
 
-doTask6 = false;
+doTask6 = true;
 task6_video = 'highway'; % 'fall' 'traffic'
-show_video_6 = false;
-doTask7 = false;
+show_video_6 = true;
+doTask7 = true;
 
 compareMethods = false;
 
@@ -187,35 +187,66 @@ if doTask4
     [RGM_TP_h, RGM_FP_h, RGM_FN_h, RGM_TN_h, RGM_Precision_h, RGM_Accuracy_h, RGM_Specificity_h, RGM_Recall_h, RGM_F1_h] = deal(zeros(length(alpha),length(ro)));
     [RGM_TP_f, RGM_FP_f, RGM_FN_f, RGM_TN_f, RGM_Precision_f, RGM_Accuracy_f, RGM_Specificity_f, RGM_Recall_f, RGM_F1_f] = deal(zeros(length(alpha),length(ro)));
     [RGM_TP_t, RGM_FP_t, RGM_FN_t, RGM_TN_t, RGM_Precision_t, RGM_Accuracy_t, RGM_Specificity_t, RGM_Recall_t, RGM_F1_t] = deal(zeros(length(alpha),length(ro)));
+    
     disp('Iterating over alpha and ro...');
-    tic
-    parfor i = 1:length(alpha)
-        [RGM_TP_h_aux, RGM_FP_h_aux, RGM_FN_h_aux, RGM_TN_h_aux, RGM_Precision_h_aux, RGM_Accuracy_h_aux, RGM_Specificity_h_aux, RGM_Recall_h_aux, RGM_F1_h_aux] = deal(zeros(1,length(ro)));
-        [RGM_TP_f_aux, RGM_FP_f_aux, RGM_FN_f_aux, RGM_TN_f_aux, RGM_Precision_f_aux, RGM_Accuracy_f_aux, RGM_Specificity_f_aux, RGM_Recall_f_aux, RGM_F1_f_aux] = deal(zeros(1,length(ro)));
-        [RGM_TP_t_aux, RGM_FP_t_aux, RGM_FN_t_aux, RGM_TN_t_aux, RGM_Precision_t_aux, RGM_Accuracy_t_aux, RGM_Specificity_t_aux, RGM_Recall_t_aux, RGM_F1_t_aux] = deal(zeros(1,length(ro)));
-        for j = 1:length(ro)
+    
+    if show_videos_4
+        for i = 1:length(alpha)
+            [RGM_TP_h_aux, RGM_FP_h_aux, RGM_FN_h_aux, RGM_TN_h_aux, RGM_Precision_h_aux, RGM_Accuracy_h_aux, RGM_Specificity_h_aux, RGM_Recall_h_aux, RGM_F1_h_aux] = deal(zeros(1,length(ro)));
+            [RGM_TP_f_aux, RGM_FP_f_aux, RGM_FN_f_aux, RGM_TN_f_aux, RGM_Precision_f_aux, RGM_Accuracy_f_aux, RGM_Specificity_f_aux, RGM_Recall_f_aux, RGM_F1_f_aux] = deal(zeros(1,length(ro)));
+            [RGM_TP_t_aux, RGM_FP_t_aux, RGM_FN_t_aux, RGM_TN_t_aux, RGM_Precision_t_aux, RGM_Accuracy_t_aux, RGM_Specificity_t_aux, RGM_Recall_t_aux, RGM_F1_t_aux] = deal(zeros(1,length(ro)));
+            for j = 1:length(ro)
+                
+                %             if mod(current, parts) == 0
+                %                 disp([num2str(round(current/total)), '%.. '])
+                %             end
+                %             current = current + 1;
+                
+                [RGM_forEstim_highway,t1_h]= task4(seq_input_highway, alpha(i), ro(j), show_videos_4, color_space);
+                [RGM_forEstim_fall,t1_f] = task4(seq_input_fall, alpha(i), ro(j), show_videos_4, color_space);
+                [RGM_forEstim_traffic,t1_t]= task4(seq_input_traffic, alpha(i), ro(j), show_videos_4, color_space);
+                
+                [RGM_TP_h_aux(j), RGM_FP_h_aux(j), RGM_FN_h_aux(j), RGM_TN_h_aux(j), RGM_Precision_h_aux(j), RGM_Accuracy_h_aux(j), RGM_Specificity_h_aux(j), RGM_Recall_h_aux(j), RGM_F1_h_aux(j)] = task2(RGM_forEstim_highway,gt_input_highway(t1_h:end));
+                [RGM_TP_f_aux(j), RGM_FP_f_aux(j), RGM_FN_f_aux(j), RGM_TN_f_aux(j), RGM_Precision_f_aux(j), RGM_Accuracy_f_aux(j), RGM_Specificity_f_aux(j), RGM_Recall_f_aux(j), RGM_F1_f_aux(j)] = task2(RGM_forEstim_fall,gt_input_fall(t1_f:end));
+                [RGM_TP_t_aux(j), RGM_FP_t_aux(j), RGM_FN_t_aux(j), RGM_TN_t_aux(j), RGM_Precision_t_aux(j), RGM_Accuracy_t_aux(j), RGM_Specificity_t_aux(j), RGM_Recall_t_aux(j), RGM_F1_t_aux(j)] = task2(RGM_forEstim_traffic,gt_input_traffic(t1_t:end));
+            end
+            %% Evaluation functions for TASK 4 (TASK 2 and TASK 3)
+            [RGM_TP_h(i,:), RGM_FP_h(i,:), RGM_FN_h(i,:), RGM_TN_h(i,:), RGM_Precision_h(i,:), RGM_Accuracy_h(i,:), RGM_Specificity_h(i,:), RGM_Recall_h(i,:), RGM_F1_h(i,:)] = deal(RGM_TP_h_aux, RGM_FP_h_aux, RGM_FN_h_aux, RGM_TN_h_aux, RGM_Precision_h_aux, RGM_Accuracy_h_aux, RGM_Specificity_h_aux, RGM_Recall_h_aux, RGM_F1_h_aux);
+            [RGM_TP_f(i,:), RGM_FP_f(i,:), RGM_FN_f(i,:), RGM_TN_f(i,:), RGM_Precision_f(i,:), RGM_Accuracy_f(i,:), RGM_Specificity_f(i,:), RGM_Recall_f(i,:), RGM_F1_f(i,:)] = deal(RGM_TP_f_aux, RGM_FP_f_aux, RGM_FN_f_aux, RGM_TN_f_aux, RGM_Precision_f_aux, RGM_Accuracy_f_aux, RGM_Specificity_f_aux, RGM_Recall_f_aux, RGM_F1_f_aux);
+            [RGM_TP_t(i,:), RGM_FP_t(i,:), RGM_FN_t(i,:), RGM_TN_t(i,:), RGM_Precision_t(i,:), RGM_Accuracy_t(i,:), RGM_Specificity_t(i,:), RGM_Recall_t(i,:), RGM_F1_t(i,:)] = deal(RGM_TP_t_aux, RGM_FP_t_aux, RGM_FN_t_aux, RGM_TN_t_aux, RGM_Precision_t_aux, RGM_Accuracy_t_aux, RGM_Specificity_t_aux, RGM_Recall_t_aux, RGM_F1_t_aux);
             
-            %             if mod(current, parts) == 0
-            %                 disp([num2str(round(current/total)), '%.. '])
-            %             end
-            %             current = current + 1;
+            disp(['Evaluated alpha ', num2str(alpha(i))]);
+        end      
+    else
+        tic
+        parfor i = 1:length(alpha)
+            [RGM_TP_h_aux, RGM_FP_h_aux, RGM_FN_h_aux, RGM_TN_h_aux, RGM_Precision_h_aux, RGM_Accuracy_h_aux, RGM_Specificity_h_aux, RGM_Recall_h_aux, RGM_F1_h_aux] = deal(zeros(1,length(ro)));
+            [RGM_TP_f_aux, RGM_FP_f_aux, RGM_FN_f_aux, RGM_TN_f_aux, RGM_Precision_f_aux, RGM_Accuracy_f_aux, RGM_Specificity_f_aux, RGM_Recall_f_aux, RGM_F1_f_aux] = deal(zeros(1,length(ro)));
+            [RGM_TP_t_aux, RGM_FP_t_aux, RGM_FN_t_aux, RGM_TN_t_aux, RGM_Precision_t_aux, RGM_Accuracy_t_aux, RGM_Specificity_t_aux, RGM_Recall_t_aux, RGM_F1_t_aux] = deal(zeros(1,length(ro)));
+            for j = 1:length(ro)
+                
+                %             if mod(current, parts) == 0
+                %                 disp([num2str(round(current/total)), '%.. '])
+                %             end
+                %             current = current + 1;
+                
+                [RGM_forEstim_highway,t1_h]= task4(seq_input_highway, alpha(i), ro(j), show_videos_4, color_space);
+                [RGM_forEstim_fall,t1_f] = task4(seq_input_fall, alpha(i), ro(j), show_videos_4, color_space);
+                [RGM_forEstim_traffic,t1_t]= task4(seq_input_traffic, alpha(i), ro(j), show_videos_4, color_space);
+                
+                [RGM_TP_h_aux(j), RGM_FP_h_aux(j), RGM_FN_h_aux(j), RGM_TN_h_aux(j), RGM_Precision_h_aux(j), RGM_Accuracy_h_aux(j), RGM_Specificity_h_aux(j), RGM_Recall_h_aux(j), RGM_F1_h_aux(j)] = task2(RGM_forEstim_highway,gt_input_highway(t1_h:end));
+                [RGM_TP_f_aux(j), RGM_FP_f_aux(j), RGM_FN_f_aux(j), RGM_TN_f_aux(j), RGM_Precision_f_aux(j), RGM_Accuracy_f_aux(j), RGM_Specificity_f_aux(j), RGM_Recall_f_aux(j), RGM_F1_f_aux(j)] = task2(RGM_forEstim_fall,gt_input_fall(t1_f:end));
+                [RGM_TP_t_aux(j), RGM_FP_t_aux(j), RGM_FN_t_aux(j), RGM_TN_t_aux(j), RGM_Precision_t_aux(j), RGM_Accuracy_t_aux(j), RGM_Specificity_t_aux(j), RGM_Recall_t_aux(j), RGM_F1_t_aux(j)] = task2(RGM_forEstim_traffic,gt_input_traffic(t1_t:end));
+            end
+            %% Evaluation functions for TASK 4 (TASK 2 and TASK 3)
+            [RGM_TP_h(i,:), RGM_FP_h(i,:), RGM_FN_h(i,:), RGM_TN_h(i,:), RGM_Precision_h(i,:), RGM_Accuracy_h(i,:), RGM_Specificity_h(i,:), RGM_Recall_h(i,:), RGM_F1_h(i,:)] = deal(RGM_TP_h_aux, RGM_FP_h_aux, RGM_FN_h_aux, RGM_TN_h_aux, RGM_Precision_h_aux, RGM_Accuracy_h_aux, RGM_Specificity_h_aux, RGM_Recall_h_aux, RGM_F1_h_aux);
+            [RGM_TP_f(i,:), RGM_FP_f(i,:), RGM_FN_f(i,:), RGM_TN_f(i,:), RGM_Precision_f(i,:), RGM_Accuracy_f(i,:), RGM_Specificity_f(i,:), RGM_Recall_f(i,:), RGM_F1_f(i,:)] = deal(RGM_TP_f_aux, RGM_FP_f_aux, RGM_FN_f_aux, RGM_TN_f_aux, RGM_Precision_f_aux, RGM_Accuracy_f_aux, RGM_Specificity_f_aux, RGM_Recall_f_aux, RGM_F1_f_aux);
+            [RGM_TP_t(i,:), RGM_FP_t(i,:), RGM_FN_t(i,:), RGM_TN_t(i,:), RGM_Precision_t(i,:), RGM_Accuracy_t(i,:), RGM_Specificity_t(i,:), RGM_Recall_t(i,:), RGM_F1_t(i,:)] = deal(RGM_TP_t_aux, RGM_FP_t_aux, RGM_FN_t_aux, RGM_TN_t_aux, RGM_Precision_t_aux, RGM_Accuracy_t_aux, RGM_Specificity_t_aux, RGM_Recall_t_aux, RGM_F1_t_aux);
             
-            [RGM_forEstim_highway,t1_h]= task4(seq_input_highway, alpha(i), ro(j), show_videos_4, color_space);
-            [RGM_forEstim_fall,t1_f] = task4(seq_input_fall, alpha(i), ro(j), show_videos_4, color_space);
-            [RGM_forEstim_traffic,t1_t]= task4(seq_input_traffic, alpha(i), ro(j), show_videos_4, color_space);
-            
-            [RGM_TP_h_aux(j), RGM_FP_h_aux(j), RGM_FN_h_aux(j), RGM_TN_h_aux(j), RGM_Precision_h_aux(j), RGM_Accuracy_h_aux(j), RGM_Specificity_h_aux(j), RGM_Recall_h_aux(j), RGM_F1_h_aux(j)] = task2(RGM_forEstim_highway,gt_input_highway(t1_h:end));
-            [RGM_TP_f_aux(j), RGM_FP_f_aux(j), RGM_FN_f_aux(j), RGM_TN_f_aux(j), RGM_Precision_f_aux(j), RGM_Accuracy_f_aux(j), RGM_Specificity_f_aux(j), RGM_Recall_f_aux(j), RGM_F1_f_aux(j)] = task2(RGM_forEstim_fall,gt_input_fall(t1_f:end));
-            [RGM_TP_t_aux(j), RGM_FP_t_aux(j), RGM_FN_t_aux(j), RGM_TN_t_aux(j), RGM_Precision_t_aux(j), RGM_Accuracy_t_aux(j), RGM_Specificity_t_aux(j), RGM_Recall_t_aux(j), RGM_F1_t_aux(j)] = task2(RGM_forEstim_traffic,gt_input_traffic(t1_t:end));
+            disp(['Evaluated alpha ', num2str(alpha(i))]);
         end
-        %% Evaluation functions for TASK 4 (TASK 2 and TASK 3)
-        [RGM_TP_h(i,:), RGM_FP_h(i,:), RGM_FN_h(i,:), RGM_TN_h(i,:), RGM_Precision_h(i,:), RGM_Accuracy_h(i,:), RGM_Specificity_h(i,:), RGM_Recall_h(i,:), RGM_F1_h(i,:)] = deal(RGM_TP_h_aux, RGM_FP_h_aux, RGM_FN_h_aux, RGM_TN_h_aux, RGM_Precision_h_aux, RGM_Accuracy_h_aux, RGM_Specificity_h_aux, RGM_Recall_h_aux, RGM_F1_h_aux);
-        [RGM_TP_f(i,:), RGM_FP_f(i,:), RGM_FN_f(i,:), RGM_TN_f(i,:), RGM_Precision_f(i,:), RGM_Accuracy_f(i,:), RGM_Specificity_f(i,:), RGM_Recall_f(i,:), RGM_F1_f(i,:)] = deal(RGM_TP_f_aux, RGM_FP_f_aux, RGM_FN_f_aux, RGM_TN_f_aux, RGM_Precision_f_aux, RGM_Accuracy_f_aux, RGM_Specificity_f_aux, RGM_Recall_f_aux, RGM_F1_f_aux);
-        [RGM_TP_t(i,:), RGM_FP_t(i,:), RGM_FN_t(i,:), RGM_TN_t(i,:), RGM_Precision_t(i,:), RGM_Accuracy_t(i,:), RGM_Specificity_t(i,:), RGM_Recall_t(i,:), RGM_F1_t(i,:)] = deal(RGM_TP_t_aux, RGM_FP_t_aux, RGM_FN_t_aux, RGM_TN_t_aux, RGM_Precision_t_aux, RGM_Accuracy_t_aux, RGM_Specificity_t_aux, RGM_Recall_t_aux, RGM_F1_t_aux);        
-        
-        disp(['Evaluated alpha ', num2str(alpha(i))]);
+        toc
     end
-    toc
     % HSV:
     % 708.768734 secs no parfor
     % 503.419721 secs 4 threads
@@ -283,9 +314,11 @@ if doTask6
                 % Show estimated scene
                 if show_video_6
                     % Quick preview
-                    for p = 1:((T2-T1)/2)
-                        imshow(SG_forEstim_highway(:,:,p*2));
-                        pause(0.001)
+                    if strcmp(task6_video,'highway')
+                        for p = 1:((T2_h-T1_h)/2)
+                            imshow(SG_forEstim_highway(:,:,p));
+                            pause(0.001)
+                        end
                     end
                 end
                 

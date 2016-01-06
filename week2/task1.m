@@ -1,8 +1,8 @@
-function [foreEstim, seq_starting_test] = task1(seq,alpha, show_videos)
+function [foreEstim, seq_starting_test] = task1(seq,alpha, show_videos, color_space)
 
 % parameters
 % alpha = 1;
- 
+
 % total elements in the sequence for training
 seq_length = length(seq);
 seq_starting_test = round(seq_length/2) + 1; % first frame for test
@@ -15,22 +15,53 @@ seq_mean = mean(M,dims+1);
 seq_std = std(double(M),0,dims+1);
 clear M;
 
-for f = seq_starting_test : seq_length
-       
-    % We pick as foreground those pixels which differ too much from the mean
-    foreEstim{f-seq_starting_test+1} = abs(double(seq{f}) - seq_mean) >= alpha.*(seq_std + 2); 
-
-    if show_videos
-        subplot(2,2,1)
-        imshow(foreEstim{f-seq_starting_test+1})
-        subplot(2,2,2)
-        imshow(seq{f})
-
-        subplot(2,2,3)
-        imshow(uint8(seq_mean))
-        subplot(2,2,4)
-        imshow(uint8(seq_std))
-        pause(0.001);
-    end
-
+if(strcmp(color_space,'HSV'))
+    seq_mean_to_show = 255*hsv2rgb(double(seq_mean)/255);
+    seq_std_to_show = 255*hsv2rgb(double(seq_std)/255);
+elseif(strcmp(color_space,'YUV'))
+    seq_mean_to_show = ycbcr2rgb(uint8(seq_mean));
+    seq_std_to_show = ycbcr2rgb(uint8(seq_std));
+else
+    seq_mean_to_show = seq_mean;
+    seq_std_to_show = seq_std;
 end
+
+for f = seq_starting_test : seq_length
+    
+    % We pick as foreground those pixels which differ too much from the mean
+    estimation = abs(double(seq{f}) - seq_mean) >= alpha.*(seq_std + 2);
+    
+    if(strcmp(color_space,'RGB'))
+        estimation = max(estimation,[],3);
+    elseif(strcmp(color_space,'HSV'))
+        H_foregroud = estimation(:,:,1);
+        estimation = H_foregroud;
+    elseif(strcmp(color_space,'YUV'))
+        UV_foregroud = estimation(:,:,[2,3]);
+        estimation = max(UV_foregroud,[],3);
+    end
+        
+        
+        foreEstim{f-seq_starting_test+1} = estimation;
+        
+        if show_videos
+            subplot(2,2,1)
+            imshow(foreEstim{f-seq_starting_test+1})
+            subplot(2,2,2)
+            if(strcmp(color_space,'HSV'))
+                input_to_show = hsv2rgb(double(seq{f})/255);
+            elseif(strcmp(color_space,'YUV'))
+                input_to_show = ycbcr2rgb(seq{f});
+            else
+                input_to_show = seq{f};
+            end
+            imshow(input_to_show)
+            
+            subplot(2,2,3)
+            imshow(uint8(seq_mean_to_show))
+            subplot(2,2,4)
+            imshow(uint8(seq_std_to_show))
+            pause(0.001);
+        end
+        
+    end

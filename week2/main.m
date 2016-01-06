@@ -5,7 +5,8 @@ clc;
 fprintf('Loading general parameters...\n');
 
 %% Select execution options
-color_space = 'Gray'; % 'RGB', 'Gray', 'HSV', 'YUV'
+
+color_space = 'RGB'; % 'RGB', 'Gray', 'HSV', 'YUV'
 
 doTask1 = false;         % Gaussian function to evaluate background
 show_videos_1 = false;  % (From Task1) show back- foreground videos
@@ -21,7 +22,6 @@ task6_video = 'highway'; % 'fall' 'traffic'
 show_video_6 = true;
 doTask7 = true;
 
-compareMethods = false;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load Parameters
@@ -112,9 +112,9 @@ if doTask1
     %% TASK 1
     disp('--------TASK 1--------');
     
-    %alpha = [0.1:0.1:5];
-    alpha = [0.1:0.25:5];
-    %     alpha = 2;
+
+    alpha = 1.85;
+    %alpha = [0.1:0.25:5];
     
     for i = 1:length(alpha)
         
@@ -162,8 +162,6 @@ if doTask1
         NRGM_Area_t = trapz(flip(NRGM_Recall_t), NRGM_Precision_t);
         disp(['Area under the curve for the Traffic: ', num2str(NRGM_Area_t)])
     end
-    
-    
     
 end % of task1
 
@@ -314,19 +312,26 @@ if doTask6
                 % Show estimated scene
                 if show_video_6
                     % Quick preview
-                    if strcmp(task6_video,'highway')
-                        for p = 1:((T2_h-T1_h)/2)
-                            imshow(SG_forEstim_highway(:,:,p));
-                            pause(0.001)
-                        end
+                    for p = 1:((T2_h-T1_h)/2)    
+                        imshow(SG_forEstim_highway{p});
+                        pause(0.001)
                     end
-                end
-                
-                fprintf('Evaluate S&G implementation...\n');
-                [SG_TP_h(i,j,k), SG_FP_h(i,j,k), SG_FN_h(i,j,k), SG_TN_h(i,j,k), SG_Precision_h(i,j,k), SG_Accuracy_h(i,j,k), SG_Specificity_h(i,j,k), SG_Recall_h(i,j,k), SG_F1_h(i,j,k)] = task2(SG_forEstim_highway,gt_input_highway);
-                [SG_TP_f(i,j,k), SG_FP_f(i,j,k), SG_FN_f(i,j,k), SG_TN_f(i,j,k), SG_Precision_f(i,j,k), SG_Accuracy_f(i,j,k), SG_Specificity_f(i,j,k), SG_Recall_f(i,j,k), SG_F1_f(i,j,k)] = task2(SG_forEstim_fall,gt_input_fall);
-                [SG_TP_t(i,j,k), SG_FP_t(i,j,k), SG_FN_t(i,j,k), SG_TN_t(i,j,k), SG_Precision_t(i,j,k), SG_Accuracy_t(i,j,k), SG_Specificity_t(i,j,k), SG_Recall_t(i,j,k), SG_F1_t(i,j,k)] = task2(SG_forEstim_traffic,gt_input_traffic);
-                
+                    pause;
+                    for p = 1:((T2_f-T1_f)/2)    
+                        imshow(SG_forEstim_fall{p});
+                        pause(0.001)
+                    end
+                    for p = 1:((T2_t-T1_t)/2)    
+                        imshow(SG_forEstim_traffic{p});
+                        pause(0.001)
+                    end
+                end                
+
+            fprintf('Evaluate S&G implementation...\n');
+            [SG_TP_h(i,j,k), SG_FP_h(i,j,k), SG_FN_h(i,j,k), SG_TN_h(i,j,k), SG_Precision_h(i,j,k), SG_Accuracy_h(i,j,k), SG_Specificity_h(i,j,k), SG_Recall_h(i,j,k), SG_F1_h(i,j,k)] = task2(SG_forEstim_highway,gt_input_highway);
+            [SG_TP_f(i,j,k), SG_FP_f(i,j,k), SG_FN_f(i,j,k), SG_TN_f(i,j,k), SG_Precision_f(i,j,k), SG_Accuracy_f(i,j,k), SG_Specificity_f(i,j,k), SG_Recall_f(i,j,k), SG_F1_f(i,j,k)] = task2(SG_forEstim_fall,gt_input_fall);
+            [SG_TP_t(i,j,k), SG_FP_t(i,j,k), SG_FN_t(i,j,k), SG_TN_t(i,j,k), SG_Precision_t(i,j,k), SG_Accuracy_t(i,j,k), SG_Specificity_t(i,j,k), SG_Recall_t(i,j,k), SG_F1_t(i,j,k)] = task2(SG_forEstim_traffic,gt_input_traffic);
+
             end
         end
     end
@@ -337,120 +342,45 @@ if doTask6
         %% Plot data for Task 7:
         
         % Plot TP, TN, FP, FN for each K:
-        for K = 1:length(K_h)
-            disp(['for K = ', num2str(K_h(i)),'...\n']);
-            plot_surfs_t5(Rho_h, Alpha_h, SG_TP_h, SG_TP_f, SG_TP_t, 'True Positives');
-            plot_surfs_t5(Rho_h, Alpha_h, SG_TN_h, SG_TN_f, SG_TN_t, 'True Negatives');
-            plot_surfs_t5(Rho_h, Alpha_h, SG_FP_h, SG_FP_f, SG_FP_t, 'False Positives');
-            plot_surfs_t5(Rho_h, Alpha_h, SG_FN_h, SG_FN_f, SG_FN_t, 'False Negatives');
+        for k = 1:length(K_h) 
+            disp(['for K = ', num2str(K_h(k)),'...\n']);
+            plot_surfs_t5(Rho_h(1:end-1), Alpha_h, squeeze(SG_TP_h(k,:,1:end-1)), squeeze(SG_TP_f(k,:,1:end-1)), squeeze(SG_TP_t(k,:,1:end-1)), 'True Positives');
+            plot_surfs_t5(Rho_h(1:end-1), Alpha_h, squeeze(SG_TN_h(k,:,1:end-1)), squeeze(SG_TN_f(k,:,1:end-1)), squeeze(SG_TN_t(k,:,1:end-1)), 'True Negatives');
+            plot_surfs_t5(Rho_h(1:end-1), Alpha_h, squeeze(SG_FP_h(k,:,1:end-1)), squeeze(SG_FP_f(k,:,1:end-1)), squeeze(SG_FP_t(k,:,1:end-1)), 'False Positives');
+            plot_surfs_t5(Rho_h(1:end-1), Alpha_h, squeeze(SG_FN_h(k,:,1:end-1)), squeeze(SG_FN_f(k,:,1:end-1)), squeeze(SG_FN_t(k,:,1:end-1)), 'False Negatives');
+
             close all;
             
             % Plot F1 Score for each K:
-            plot_surfs_t5(Rho_h, Alpha_h, SG_F1_h, SG_F1_f, SG_F1_t, 'F 1 score');
-            plot_precision_recall_t3(SG_Recall_h, SG_Recall_f, SG_Recall_t, SG_Precision_h, SG_Precision_f, SG_Precision_t)
-            
+            plot_surfs_t5(Rho_h(1:end-1), Alpha_h, squeeze(SG_F1_h(k,:,1:end-1)), squeeze(SG_F1_f(k,:,1:end-1)), squeeze(SG_F1_t(k,:,1:end-1)), 'F 1 score');
+            plot_precision_recall_t3(squeeze(SG_Recall_h(k,:,1:end-1)), squeeze(SG_Recall_f(k,:,1:end-1)), squeeze(SG_Recall_t(k,:,1:end-1)), squeeze(SG_Precision_h(k,:,1:end-1)), squeeze(SG_Precision_f(k,:,1:end-1)), squeeze(SG_Precision_t(k,:,1:end-1)))    
+%             
             pause;
+
+            % Best F1
+            [max_F1_h(k), best_ro_index_h, best_alpha_index_h] = calculate_best_ro_alpha(squeeze(SG_F1_h(k,:,1:end-1)));
+            [max_F1_f(k), best_ro_index_f, best_alpha_index_f] = calculate_best_ro_alpha(squeeze(SG_F1_f(k,:,1:end-1)));
+            [max_F1_t(k), best_ro_index_t, best_alpha_index_t] = calculate_best_ro_alpha(squeeze(SG_F1_t(k,:,1:end-1)));
+
+            disp(['Max F1 Score for the Highway: ', num2str(max_F1_h(k)), ' with rho = ', num2str(Rho_h(best_ro_index_h)), ' and alpha =', num2str(Alpha_h(best_alpha_index_h))])
+            disp(['Max F1 Score for the Fall: ', num2str(max_F1_f(k)), ' with rho = ', num2str(Rho_f(best_ro_index_f)), ' and alpha =', num2str(Alpha_f(best_alpha_index_f))])
+            disp(['Max F1 Score for the Traffic: ', num2str(max_F1_t(k)), ' with rho = ', num2str(Rho_t(best_ro_index_t)), ' and alpha =', num2str(Alpha_t(best_alpha_index_t))])
             
-            [max_AUC_h, best_ro_index_h] = calculate_best_ro(SG_Recall_h, SG_Precision_h);
-            [max_AUC_f, best_ro_index_f] = calculate_best_ro(SG_Recall_f, SG_Precision_f);
-            [max_AUC_t, best_ro_index_t] = calculate_best_ro(SG_Recall_t, SG_Precision_t);
-            
-            disp(['Area under the curve for the Highway: ', num2str(max_AUC_h), ' with ro = ', num2str(ro(best_ro_index_h))])
-            disp(['Area under the curve for the Fall: ', num2str(max_AUC_f), ' with ro = ', num2str(ro(best_ro_index_f))])
-            disp(['Area under the curve for the Traffic: ', num2str(max_AUC_t), ' with ro = ', num2str(ro(best_ro_index_t))])
+            % Best AUC
+            [max_AUC_h(k), best_ro_index_h] = calculate_best_ro(squeeze(SG_Recall_h(k,:,1:end-1)), squeeze(SG_Precision_h(k,:,1:end-1)));
+            [max_AUC_f(k), best_ro_index_f] = calculate_best_ro(squeeze(SG_Recall_f(k,:,1:end-1)), squeeze(SG_Precision_f(k,:,1:end-1)));
+            [max_AUC_t(k), best_ro_index_t] = calculate_best_ro(squeeze(SG_Recall_t(k,:,1:end-1)), squeeze(SG_Precision_t(k,:,1:end-1)));
+
+            disp(['Area under the curve for the Highway: ', num2str(max_AUC_h(k)), ' with ro = ', num2str(Rho_h(best_ro_index_h))])
+            disp(['Area under the curve for the Fall: ', num2str(max_AUC_f(k)), ' with ro = ', num2str(Rho_f(best_ro_index_f))])
+            disp(['Area under the curve for the Traffic: ', num2str(max_AUC_t(k)), ' with ro = ', num2str(Rho_t(best_ro_index_t))])
         end
+        plot_maxAUC(K_h,max_AUC_h,K_f,max_AUC_f,K_t,max_AUC_t)
+        plot_maxF1(K_h,max_F1_h,K_f,max_F1_f,K_t,max_F1_t)
     end
 end
 fprintf('\nTask 6 done.\n')
 
-% B�sicament falta trobar els parametres que van be per a cada
-%     sequ�ncia amb S&G,  i compararne els resultats amb els millors
-%     parametres que teniem fins ara. Ho he deixat tot a punt per ser
-%     executat, he modificat el seu codi S&G per a que ens cridi els
-%     datasets a on els tenim, i he creat moltes funcions per tenir les
-%     coses ordenades. Les m�s important que heu de saber,
-%     load_parameters_t6, que carrega els parametres de S&G i que cadr�
-%     anar ajustant per a trobar el millor rendiment.
-%     L'ideal seria generar algun bucle com amb les task1 i task4
-%     que vagi provant diferents combinacions, pero com que el model
-%     triga una mica mes que task1 i task4 us ho deixo a la
-%     vostra elecci� :P
-
-% Aqu� faltar� fer l'avaluaci� per a la configuraci� S&G concreta.
-% Es poden carregar els par�metres un cop i desp�s executar-ho per a
-% differents Alphas com feiem amb la task1 i la task4, de manera que
-% podrem tenir gr�fics m�s complerts sobre l'evoluci� dels resultats en
-% funci� de alpha, per� recordeu que aquest model tamb� varia en funci�
-% dels altres par�metres modificables a load_parameters_t6. Aquests
-% par�metres tamb� tindran un rendiment MOLT diferent en funci� del
-% video que fem servir. Cal entrendre b� que:
-%
-%   Alhpa �s el threshold de N de desviaci� estandard on acceptem que
-%   un pixel pertany a una gaussiana (1-4), veure surfs en tasca 4.
-%
-%   K �s el nombre de gaussianes que defineixen un sol pixel. Nosaltres
-%   en ten�em tan sols una, ara en tindrem de 3 a 6, definint per
-%   exemple blancs saturats i verds foscos si en un punt hi ha sovint
-%   una fulla que es mou i deixa sovint un tros de cel blanc lluent.
-%
-%   Rho �s com a task 4 el pes que t� l'ultima deteccio de background
-%   en aquell punt, �s a dir, com m�s gran, m�s r�pid aprenem el nou
-%   background. Si el foreground es detecta com a background i
-%   l'aprenem com a tal, ja no ho arreglarem mai, i quan torni el
-%   background l'entendrem com a foreground i mai el reaprendrem b�.
-%   Per tant, controlar que no sigui massa gran.
-%
-%   THFG no recordo haver-lo relacionat amb cap concepte te�ric, per�
-%   sembla que sobre 0.25 va b�.
-%
-% HAVE FUN!
-
-
-% task 6
-
-if compareMethods
-    
-    % We first compute the foreground model for each sequence using each
-    % technique with the best configuration we could find. Then compute the metrics:
-    
-    %     % Non-Recursive Gaussian Modeling
-    %     [RGM_forEstim_highway, t1_h,t2_h]= task1(seq_input_highway,alpha(i), show_videos_1);
-    %     [RGM_forEstim_fall,t1_f,t2_f] = task1(seq_input_fall,alpha(i), show_videos_1);
-    %     [RGM_forEstim_traffic,t1_t,t2_t]= task1(seq_input_traffic,alpha(i), show_videos_1);
-    %
-    %     % NRGM evaluation
-    %     [TP_h(i), FP_h(i), FN_h(i), TN_h(i), Precision_h(i), Accuracy_h(i), Specificity_h(i), Recall_h(i), F1_h(i)] = task2(NRGM_forEstim_highway,gt_input_highway(t1_h:end));
-    %     [TP_f(i), FP_f(i), FN_f(i), TN_f(i), Precision_f(i), Accuracy_f(i), Specificity_f(i), Recall_f(i), F1_f(i)] = task2(NRGM_forEstim_fall,gt_input_fall(t1_f:end));
-    %     [TP_t(i), FP_t(i), FN_t(i), TN_t(i), Precision_t(i), Accuracy_t(i), Specificity_t(i), Recall_t(i), F1_t(i)] = task2(NRGM_forEstim_traffic,gt_input_traffic(t1_t:end));
-    %
-    %
-    %     % Recursive Gaussian Modeling
-    %     [RGM_forEstim_highway,t1_h,t2_h]= task4(seq_input_highway, alpha, ro, show_videos_4);
-    %     [RGM_forEstim_fall,t1_f,t2_f] = task4(seq_input_fall, alpha, ro, show_videos_4);
-    %     [RGM_forEstim_traffic,t1_t,t2_t]= task4(seq_input_traffic, alpha, ro, show_videos_4);
-    %
-    %     % NRGM evaluation
-    %     [TP_h(i,j), FP_h(i,j), FN_h(i,j), TN_h(i,j), Precision_h(i,j), Accuracy_h(i,j), Specificity_h(i,j), Recall_h(i,j), F1_h(i,j)] = task2(RGM_forEstim_highway,gt_input_highway(t1_h:end));
-    %     [TP_f(i,j), FP_f(i,j), FN_f(i,j), TN_f(i,j), Precision_f(i,j), Accuracy_f(i,j), Specificity_f(i,j), Recall_f(i,j), F1_f(i,j)] = task2(RGM_forEstim_fall,gt_input_fall(t1_f:end));
-    %     [TP_t(i,j), FP_t(i,j), FN_t(i,j), TN_t(i,j), Precision_t(i,j), Accuracy_t(i,j), Specificity_t(i,j), Recall_t(i,j), F1_t(i,j)] = task2(RGM_forEstim_traffic,gt_input_traffic(t1_t:end));
-    %
-    %
-    %     % Stauffer and Grimson
-    %     fprintf('Running S&G implementation for Highway...\n');
-    %     [SG_forEstim_highway] = MultG_fun(Alpha_h, T1_h, T2_h, K_h, Rho_h, THFG_h, 'highway');
-    %     fprintf('Running S&G implementation for Fall...\n');
-    %     [SG_forEstim_fall] = MultG_fun(Alpha_f, T1_f, T2_f, K_f, Rho_f, THFG_f, 'fall');
-    %     fprintf('Running S&G implementation for Traffic...\n');
-    %     [SG_forEstim_traffic] = MultG_fun(Alpha_t, T1_t, T2_t, K_t, Rho_t, THFG_t, 'traffic');
-    %
-    %     % Stauffer and Grimson Evaluation
-    %     fprintf('Evaluate S&G implementation...\n');
-    %     [TP_h(i), FP_h(i), FN_h(i), TN_h(i), Precision_h(i), Accuracy_h(i), Specificity_h(i), Recall_h(i), F1_h(i)] = task2(SG_forEstim_highway,gt_input_highway);
-    %     [TP_f(i), FP_f(i), FN_f(i), TN_f(i), Precision_f(i), Accuracy_f(i), Specificity_f(i), Recall_f(i), F1_f(i)] = task2(SG_forEstim_fall,gt_input_fall);
-    %     [TP_t(i), FP_t(i), FN_t(i), TN_t(i), Precision_t(i), Accuracy_t(i), Specificity_t(i), Recall_t(i), F1_t(i)] = task2(SG_forEstim_traffic,gt_input_traffic);
-    %
-    %
-end
 
 
 fprintf('\n FINISHED.\n')

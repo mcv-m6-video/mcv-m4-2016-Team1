@@ -20,3 +20,5 @@ In results and results_kitti are stored the results used in this practical sessi
 Good luck!
 
 ###### WEEK 2 ######
+The usage is only to select the options in lines 9-23 of main.m and then execute main. Have fun!
+

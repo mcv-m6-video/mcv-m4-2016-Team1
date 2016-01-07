@@ -4,23 +4,23 @@ function [alpha,T1,T2,K,Rho,THFG] = load_parameters_t6(video)
 switch (video)
         case 'highway'
             
-            alpha = [2,2.5];%[1.5:0.25:4];    % like our alpha ~ 2 [1-4]
+            alpha = 1:1:6;    % like our alpha ~ 2 [1-4]
             K = [3,4,5,6];              % accepted from 3 to 6 
-            Rho = [0.1,0.2];          % Rho as in our implementation ~ 0.1
+            Rho = 0.0:0.1:0.6;          % Rho as in our implementation ~ 0.1
             THFG = 0.25;        % of weights corresponding to foreground objects
             
         case 'fall'
 
-            alpha = [2,2.5];%[1.5:0.25:4];    % like our alpha ~ 2 [1-4]
+            alpha = 1:1:6;%[1.5:0.25:4];    % like our alpha ~ 2 [1-4]
             K = [3,4,5,6];              % accepted from 3 to 6 
-            Rho = [0.1,0.2];          % Rho as in our implementation ~ 0.1
+            Rho = 0.0:0.1:0.6;          % Rho as in our implementation ~ 0.1
             THFG = 0.25;        % of weights corresponding to foreground objects
             
         case 'traffic'
             
-            alpha = [2,2.5];%[1.5:0.25:4];    % like our alpha ~ 2 [1-4]
+            alpha = 1:1:6;%[1.5:0.25:4];    % like our alpha ~ 2 [1-4]
             K = [3,4,5,6];              % accepted from 3 to 6 
-            Rho = [0.1,0.2];          % Rho as in our implementation ~ 0.1
+            Rho = 0.0:0.1:0.6;          % Rho as in our implementation ~ 0.1
             THFG = 0.25;        % of weights corresponding to foreground objects
     
         otherwise

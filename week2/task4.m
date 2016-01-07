@@ -33,11 +33,15 @@ for f = seq_starting_test : seq_length
     if(strcmp(color_space,'RGB'))
         estimation = max(estimation,[],3);
     elseif(strcmp(color_space,'HSV'))
-        H_foregroud = estimation(:,:,1);
-        estimation = H_foregroud;
+        %% If the next two lines uncommented and the last commented -> Model 2. Opposite -> Model 1.
+%         H_foregroud = estimation(:,:,1);
+%         estimation = H_foregroud;
+        estimation = max(estimation,[],3);
     elseif(strcmp(color_space,'YUV'))
-        UV_foregroud = estimation(:,:,[2,3]);
-        estimation = max(UV_foregroud,[],3);
+        %% If the next two lines uncommented and the last commented -> Model 2. Opposite -> Model 1.
+%         UV_foregroud = estimation(:,:,[2,3]);
+%         estimation = max(UV_foregroud,[],3);
+        estimation = max(estimation,[],3);
     end
     foreEstim{f-seq_starting_test+1} = estimation;
     

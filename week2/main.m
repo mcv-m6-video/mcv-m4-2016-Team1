@@ -6,7 +6,7 @@ fprintf('Loading general parameters...\n');
 
 %% Select execution options
 
-color_space = 'Gray'; % 'RGB', 'Gray', 'HSV', 'YUV'
+color_space = 'HSV'; % 'RGB', 'Gray', 'HSV', 'YUV'
 
 doTask1 = false;         % Gaussian function to evaluate background
 show_videos_1 = false;  % (From Task1) show back- foreground videos
@@ -15,12 +15,12 @@ doTask3 = true;         % (From Task1) Precision vs recall, AUC
 
 doTask4 = false;        % Adaptive modelling
 show_videos_4 = false;  % (From Task4) show back- foreground videos
-doTask5 = true;
+doTask5 = false;
 
 doTask6 = true;
 % task6_video = 'highway'; % 'fall' 'traffic'
 show_video_6 = false;
-doTask7 = true;
+doTask7 = false;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -114,7 +114,7 @@ if doTask1
     
     
     %     alpha = 1.85;
-    alpha = [0.1:0.25:5];
+    alpha = [0.1:0.25:10];
     
     for i = 1:length(alpha)
         
@@ -132,7 +132,13 @@ if doTask1
         end
         
     end
-    
+    [maxF1h,id] = max(NRGM_F1_h(:)); good_alpha = alpha(id);
+    disp(['max F1 highway: ', num2str(maxF1h), ' in alpha: ',num2str(good_alpha)]);
+    [maxF1f,id] = max(NRGM_F1_f(:)); good_alpha = alpha(id);
+    disp(['max F1 fall: ', num2str(max(maxF1f)), ' in alpha: ',num2str(good_alpha)]);
+    [maxF1t,id] = max(NRGM_F1_t(:)); good_alpha = alpha(id);
+    disp(['max F1 traffic: ', num2str(max(maxF1t)), ' in alpha: ',num2str(good_alpha)]);
+
     %% TASK 2
     if doTask2
         
@@ -175,8 +181,8 @@ if doTask4
     
     disp('--------TASK 4--------');
     
-    alpha = [0.1:0.25:5];
-    rho = [0.1:0.1:1];
+    alpha = [0.1:0.25:7];
+    rho = [0.1:0.1:0.3];
     %     alpha = 2;
     %     ro = 0.5;
     
@@ -361,7 +367,6 @@ if doTask6
 
             for j = 1:length(Alpha_h)
                 for k = 1:length(Rho_h)
-                    
                     % Run the S&G implementation for the given parameters
                     %                     fprintf('Running S&G implementation for Highway...\n');
                     [SG_forEstim_highway] = MultG_fun(Alpha_h(j), T1_h, T2_h, K_h(i), Rho_h(k), THFG_h, 'highway', color_space);
@@ -374,7 +379,7 @@ if doTask6
                     fprintf('Evaluate S&G implementation...\n');
                     [SG_TP_h_aux(1,j,k), SG_FP_h_aux(1,j,k), SG_FN_h_aux(1,j,k), SG_TN_h_aux(1,j,k), SG_Precision_h_aux(1,j,k), SG_Accuracy_h_aux(1,j,k), SG_Specificity_h_aux(1,j,k), SG_Recall_h_aux(1,j,k), SG_F1_h_aux(1,j,k)] = task2(SG_forEstim_highway,gt_input_highway);
                     [SG_TP_f_aux(1,j,k), SG_FP_f_aux(1,j,k), SG_FN_f_aux(1,j,k), SG_TN_f_aux(1,j,k), SG_Precision_f_aux(1,j,k), SG_Accuracy_f_aux(1,j,k), SG_Specificity_f_aux(1,j,k), SG_Recall_f_aux(1,j,k), SG_F1_f_aux(1,j,k)] = task2(SG_forEstim_fall,gt_input_fall);
-                    [SG_TP_t_aux(1,j,k), SG_FP_t_aux(1,j,k), SG_FN_t_aux(1,j,k), SG_TN_t_aux(1,j,k), SG_Precision_t_aux(1,j,k), SG_Accuracy_t_aux(1,j,k), SG_Specificity_t_aux(1,j,k), SG_Recall_t_aux(1,j,k), SG_F1_t_aux(1,j,k)] = task2(SG_forEstim_traffic,gt_input_traffic);                    
+                    [SG_TP_t_aux(1,j,k), SG_FP_t_aux(1,j,k), SG_FN_t_aux(1,j,k), SG_TN_t_aux(1,j,k), SG_Precision_t_aux(1,j,k), SG_Accuracy_t_aux(1,j,k), SG_Specificity_t_aux(1,j,k), SG_Recall_t_aux(1,j,k), SG_F1_t_aux(1,j,k)] = task2(SG_forEstim_traffic,gt_input_traffic);
                 end
             end
             [SG_TP_h(i,:,:), SG_FP_h(i,:,:), SG_FN_h(i,:,:), SG_TN_h(i,:,:), SG_Precision_h(i,:,:), SG_Accuracy_h(i,:,:), SG_Specificity_h(i,:,:), SG_Recall_h(i,:,:), SG_F1_h(i,:,:)] = deal(SG_TP_h_aux, SG_FP_h_aux, SG_FN_h_aux, SG_TN_h_aux, SG_Precision_h_aux, SG_Accuracy_h_aux, SG_Specificity_h_aux, SG_Recall_h_aux, SG_F1_h_aux);
@@ -385,10 +390,12 @@ if doTask6
         end        
     end
     toc
-    
-    disp(['max F1 highway: ', num2str(max(SG_F1_h(:)))]);
-    disp(['max F1 fall: ', num2str(max(SG_F1_f(:)))]);
-    disp(['max F1 traffic: ', num2str(max(SG_F1_t(:)))]);
+    [maxF1, id] = max(SG_F1_h(:)); [idi,idj,idk] = ind2sub(size(SG_F1_h),id); good_ngauss = K_h(idi); good_alpha = Alpha_h(idj); good_rho = Rho_h(idk);
+    disp(['max F1 highway: ', num2str(maxF1),' with n_gaussians=',num2str(good_ngauss),', alpha=',num2str(good_alpha),', rho=',num2str(good_rho)]);
+    [maxF1, id] = max(SG_F1_f(:)); [idi,idj,idk] = ind2sub(size(SG_F1_f),id); good_ngauss = K_h(idi); good_alpha = Alpha_h(idj); good_rho = Rho_h(idk);
+    disp(['max F1 fall: ', num2str(maxF1),' with n_gaussians=',num2str(good_ngauss),', alpha=',num2str(good_alpha),', rho=',num2str(good_rho)]);
+    [maxF1, id] = max(SG_F1_t(:)); [idi,idj,idk] = ind2sub(size(SG_F1_t),id); good_ngauss = K_h(idi); good_alpha = Alpha_h(idj); good_rho = Rho_h(idk);
+    disp(['max F1 traffic: ', num2str(maxF1),' with n_gaussians=',num2str(good_ngauss),', alpha=',num2str(good_alpha),', rho=',num2str(good_rho)]);
 
     
     

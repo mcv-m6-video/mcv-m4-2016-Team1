@@ -6,9 +6,9 @@ fprintf('Loading general parameters...\n');
 
 %% Select execution options
 
-color_space = 'HSV'; % 'RGB', 'Gray', 'HSV', 'YUV'
+color_space = 'Gray'; % 'RGB', 'Gray', 'HSV', 'YUV'
 
-doTask1 = false;         % Gaussian function to evaluate background
+doTask1 = true;         % Gaussian function to evaluate background
 show_videos_1 = false;  % (From Task1) show back- foreground videos
 doTask2 = true;         % (From Task1) TP, TN, FP, FN, F1score vs alpha
 doTask3 = true;         % (From Task1) Precision vs recall, AUC
@@ -17,7 +17,7 @@ doTask4 = false;        % Adaptive modelling
 show_videos_4 = false;  % (From Task4) show back- foreground videos
 doTask5 = false;
 
-doTask6 = true;
+doTask6 = false;
 % task6_video = 'highway'; % 'fall' 'traffic'
 show_video_6 = false;
 doTask7 = false;
@@ -114,7 +114,8 @@ if doTask1
     
     
     %     alpha = 1.85;
-    alpha = [0.1:0.25:10];
+    alpha = [0:0.5:10];
+%   alpha = [alpha, 11:5:20];
     
     for i = 1:length(alpha)
         
@@ -156,16 +157,16 @@ if doTask1
         
         disp('--------TASK 3--------');
         % Plot Precision VS Recall
-        plot_precision_recall_t3(NRGM_Recall_h, NRGM_Recall_f, NRGM_Recall_t, NRGM_Precision_h, NRGM_Precision_f, NRGM_Precision_t);
+        plot_precision_recall_t3([NRGM_Recall_h,0], [NRGM_Recall_f,0], [NRGM_Recall_t,0], [NRGM_Precision_h,1], [NRGM_Precision_f,1], [NRGM_Precision_t,1]);
         
         % Calculate the area under the curve
-        NRGM_Area_h = trapz(flip(NRGM_Recall_h), NRGM_Precision_h);
+        NRGM_Area_h = trapz(flip([NRGM_Recall_h,0]), [NRGM_Precision_h,1]);
         disp(['Area under the curve for the Highway: ', num2str(NRGM_Area_h)])
         
-        NRGM_Area_f = trapz(flip(NRGM_Recall_f), NRGM_Precision_f);
+        NRGM_Area_f = trapz(flip([NRGM_Recall_f,0]), [NRGM_Precision_f,1]);
         disp(['Area under the curve for the Fall: ', num2str(NRGM_Area_f)])
         
-        NRGM_Area_t = trapz(flip(NRGM_Recall_t), NRGM_Precision_t);
+        NRGM_Area_t = trapz(flip([NRGM_Recall_t,0]), [NRGM_Precision_t,1]);
         disp(['Area under the curve for the Traffic: ', num2str(NRGM_Area_t)])
     end
     

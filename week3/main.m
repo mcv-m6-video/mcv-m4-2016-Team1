@@ -54,9 +54,9 @@ if doTask1
     plot_precision_recall_t3([1,Recall_h,0], [1,Recall_f,0], [1,Recall_t,0], [0,Precision_h,1], [0,Precision_f,1], [0,Precision_t,1]);
     
     % Calculate the area under the curve
-    AUC_h = trapz(flip([1,Recall_h,0]), [0,Precision_h,1]);
-    AUC_f = trapz(flip([1,Recall_f,0]), [0,Precision_f,1]);
-    AUC_t = trapz(flip([1,Recall_t,0]), [0,Precision_t,1]);
+    AUC_h = trapz(flip([1,Recall_h,0]), flip([0,Precision_h,1]));
+    AUC_f = trapz(flip([1,Recall_f,0]), flip([0,Precision_f,1]));
+    AUC_t = trapz(flip([1,Recall_t,0]), flip([0,Precision_t,1]));
     
     disp(['Area under the curve for the Highway: ', num2str(AUC_h)])
     disp(['Area under the curve for the Fall: ', num2str(AUC_f)])

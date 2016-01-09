@@ -6,7 +6,7 @@ fprintf('Loading general parameters...\n');
 
 %% Select execution options
 
-color_space = 'Gray'; % 'RGB', 'Gray', 'HSV', 'YUV'
+color_space = 'YUV'; % 'RGB', 'Gray', 'HSV', 'YUV'
 
 doTask1 = true;         % 
 
@@ -24,11 +24,12 @@ show_videos_1 = params.showvideos1;
 
 for i = 1:length(alpha)
 
+    disp(['Computing for: ', num2str(alpha(i))]);
+    
     [forEstim_highway, t1_h]= task1(seq_input_highway,alpha(i), show_videos_1, color_space);
     [forEstim_fall,t1_f] = task1(seq_input_fall,alpha(i), show_videos_1, color_space);
     [forEstim_traffic,t1_t]= task1(seq_input_traffic,alpha(i), show_videos_1, color_space);
 
-    
     
     
     % Evaluation functions for TASK 1 (TASK 2 and TASK 3)
@@ -55,9 +56,9 @@ disp('--------Plot AUC--------');
 plot_precision_recall_t3([1,Recall_h,0], [1,Recall_f,0], [1,Recall_t,0], [0,Precision_h,1], [0,Precision_f,1], [0,Precision_t,1]);
 
 % Calculate the area under the curve
-Area_h = trapz(flip([1,Recall_h,0]), [0,Precision_h,1]);
-Area_f = trapz(flip([1,Recall_f,0]), [0,Precision_f,1]);
-Area_t = trapz(flip([1,Recall_t,0]), [0,Precision_t,1]);
+Area_h = trapz(flip([1,Recall_h,0]), flip([0,Precision_h,1]));
+Area_f = trapz(flip([1,Recall_f,0]), flip([0,Precision_f,1]));
+Area_t = trapz(flip([1,Recall_t,0]), flip([0,Precision_t,1]));
 
 disp(['Area under the curve for the Highway: ', num2str(Area_h)])
 disp(['Area under the curve for the Fall: ', num2str(Area_f)])

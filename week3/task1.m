@@ -1,5 +1,5 @@
 function [foreEstim, seq_starting_test] = task1(seq,alpha, show_videos, color_space)
-
+global params;
 % parameters
 % alpha = 1;
 
@@ -45,8 +45,11 @@ for f = seq_starting_test : seq_length
         estimation = max(estimation,[],3);
     end
         
-        
-        foreEstim{f-seq_starting_test+1} = estimation;
+        if params.fill_conn==0
+            foreEstim{f-seq_starting_test+1} = estimation;
+        else
+            foreEstim{f-seq_starting_test+1} = imfill(estimation,params.fill_conn,'holes');
+        end
         
         if show_videos
             subplot(2,2,1)
@@ -68,4 +71,4 @@ for f = seq_starting_test : seq_length
             pause(0.001);
         end
         
-    end
+end

@@ -3,25 +3,24 @@ function [alpha,T1,T2,K,Rho,THFG] = load_parameters_t6(video)
 %% Modifiable parameters to be optmized for each scene
 switch (video)
         case 'highway'
-            
-            alpha = 1:1:6;    % like our alpha ~ 2 [1-4]
-            K = [3,4,5,6];              % accepted from 3 to 6 
-            Rho = 0.0:0.1:0.6;          % Rho as in our implementation ~ 0.1
-            THFG = 0.25;        % of weights corresponding to foreground objects
+            alpha = 3;      % like our alpha ~ 2 [1-4]
+            K = 3;              % accepted from 3 to 6 
+            Rho = 0.015;          % Rho as in our implementation ~ 0.1
+            THFG = 0.5;         % of weights corresponding to foreground objects
             
         case 'fall'
 
-            alpha = 1:1:6;%[1.5:0.25:4];    % like our alpha ~ 2 [1-4]
-            K = [3,4,5,6];              % accepted from 3 to 6 
-            Rho = 0.0:0.1:0.6;          % Rho as in our implementation ~ 0.1
-            THFG = 0.25;        % of weights corresponding to foreground objects
+            alpha = 3;      %[1.5:0.25:4];    % like our alpha ~ 2 [1-4]
+            K = 3;              % accepted from 3 to 6 
+            Rho = 0.025;          % Rho as in our implementation ~ 0.1
+            THFG = 0.5;         % of weights corresponding to foreground objects
             
         case 'traffic'
             
-            alpha = 1:1:6;%[1.5:0.25:4];    % like our alpha ~ 2 [1-4]
-            K = [3,4,5,6];              % accepted from 3 to 6 
-            Rho = 0.0:0.1:0.6;          % Rho as in our implementation ~ 0.1
-            THFG = 0.25;        % of weights corresponding to foreground objects
+            alpha = 3;      %[1.5:0.25:4];    % like our alpha ~ 2 [1-4]
+            K = 3;              % accepted from 3 to 6 
+            Rho = 0.014;          % Rho as in our implementation ~ 0.1
+            THFG = 0.7;         % of weights corresponding to foreground objects
     
         otherwise
             fprintf('Invalid scene selected [highway, fall, traffic].\n');

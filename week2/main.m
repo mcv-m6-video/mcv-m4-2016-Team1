@@ -8,14 +8,14 @@ fprintf('Loading general parameters...\n');
 
 color_space = 'Gray'; % 'RGB', 'Gray', 'HSV', 'YUV'
 
-doTask1 = true;         % Gaussian function to evaluate background
+doTask1 = false;         % Gaussian function to evaluate background
 show_videos_1 = false;  % (From Task1) show back- foreground videos
-doTask2 = true;         % (From Task1) TP, TN, FP, FN, F1score vs alpha
-doTask3 = true;         % (From Task1) Precision vs recall, AUC
+doTask2 = false;         % (From Task1) TP, TN, FP, FN, F1score vs alpha
+doTask3 = false;         % (From Task1) Precision vs recall, AUC
 
-doTask4 = false;        % Adaptive modelling
+doTask4 = true;        % Adaptive modelling
 show_videos_4 = false;  % (From Task4) show back- foreground videos
-doTask5 = false;
+doTask5 = true;
 
 doTask6 = false;
 % task6_video = 'highway'; % 'fall' 'traffic'
@@ -113,9 +113,8 @@ if doTask1
     disp('--------TASK 1--------');
     
     
-    %     alpha = 1.85;
     alpha = [0:0.5:10];
-%   alpha = [alpha, 11:5:20];
+
     
     for i = 1:length(alpha)
         
@@ -182,8 +181,8 @@ if doTask4
     
     disp('--------TASK 4--------');
     
-    alpha = [0.1:0.25:7];
-    rho = [0.1:0.1:0.3];
+    alpha = [0:0.5:5];
+    rho = [0.1,0.15];
     %     alpha = 2;
     %     ro = 0.5;
     
@@ -278,13 +277,13 @@ if doTask4
         
         % Plot F1 Score
         plot_surfs_t5(rho, alpha, RGM_F1_h, RGM_F1_f, RGM_F1_t, 'F 1 score');
-        plot_precision_recall_t3(RGM_Recall_h, RGM_Recall_f, RGM_Recall_t, RGM_Precision_h, RGM_Precision_f, RGM_Precision_t);
+        plot_precision_recall_t3([RGM_Recall_h,0], [RGM_Recall_f,0], [RGM_Recall_t,0], [RGM_Precision_h,1], [RGM_Precision_f,1], [RGM_Precision_t,1]);
         
         pause;
         
-        [max_AUC_h, best_ro_index_h] = calculate_best_ro(RGM_Recall_h, RGM_Precision_h);
-        [max_AUC_f, best_ro_index_f] = calculate_best_ro(RGM_Recall_f, RGM_Precision_f);
-        [max_AUC_t, best_ro_index_t] = calculate_best_ro(RGM_Recall_t, RGM_Precision_t);
+        [max_AUC_h, best_ro_index_h] = calculate_best_ro([RGM_Recall_h(:,1);0], [RGM_Precision_h(:,1);1]);
+        [max_AUC_f, best_ro_index_f] = calculate_best_ro([RGM_Recall_f(:,1);0], [RGM_Precision_f(:,1);1]);
+        [max_AUC_t, best_ro_index_t] = calculate_best_ro([RGM_Recall_t(:,1);0], [RGM_Precision_t(:,1);1]);
         
         disp(['Area under the curve for the Highway: ', num2str(max_AUC_h), ' with ro = ', num2str(rho(best_ro_index_h))]);
         disp(['Area under the curve for the Fall: ', num2str(max_AUC_f), ' with ro = ', num2str(rho(best_ro_index_f))]);

@@ -64,7 +64,7 @@ Fold = [video];
     
 [H,W,C]=size(Frame);
 Frame=double(reshape(Frame,H*W,C));
-[ws,sigmas,mus] = StGm( Frame,K,8);   % Initialization process
+[ws,sigmas,mus] = StGm(Frame,K,8);   % Initialization process
 
 % disp('Initialized');
 % size(ws2)

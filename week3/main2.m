@@ -27,9 +27,9 @@ for i = 1:length(params.alpha)
 
     disp(['Computing for: alpha = ', num2str(params.alpha(i)),' and P = ' num2str(params.P(j))]);
     
-    [forEstim_highway, t1_h]= task1(seq_input_highway,params.alpha(i), params.P(j), show_videos_1, color_space);
-    [forEstim_fall,t1_f] = task1(seq_input_fall,params.alpha(i), params.P(j),show_videos_1, color_space);
-    [forEstim_traffic,t1_t]= task1(seq_input_traffic,params.alpha(i), params.P(j),show_videos_1, color_space);
+    [forEstim_highway, t1_h]= task1(seq_input_highway,params.alpha(i), 90, show_videos_1, color_space);
+    [forEstim_fall,t1_f] = task1(seq_input_fall,params.alpha(i), 390,show_videos_1, color_space);
+    [forEstim_traffic,t1_t]= task1(seq_input_traffic,params.alpha(i), 390,show_videos_1, color_space);
 
     
     % Evaluation functions for TASK 1 (TASK 2 and TASK 3)
@@ -59,8 +59,9 @@ disp('--------Plot AUC--------');
 for i = 1: length(params.P)
     
     % Plot Precision VS Recall
-    plot_precision_recall_t3([1,Recall_h(:,i)',0], [1,Recall_f(:,i)',0], [1,Recall_t(:,i)',0], [0,Precision_h(:,i)',1], [0,Precision_f(:,i)',1], [0,Precision_t(:,i)',1]);
-
+%    plot_precision_recall_t3([1,Recall_h(:,i)',0], [1,Recall_f(:,i)',0], [1,Recall_t(:,i)',0], [0,Precision_h(:,i)',1], [0,Precision_f(:,i)',1], [0,Precision_t(:,i)',1]);
+    plot_precision_recall_average([1,Recall_h(:,i)',0], [1,Recall_f(:,i)',0], [1,Recall_t(:,i)',0], [0,Precision_h(:,i)',1], [0,Precision_f(:,i)',1], [0,Precision_t(:,i)',1])
+    
     % Calculate the area under the curve
     Area_h(i) = trapz(flip([1,Recall_h(:,i)',0]), flip([0,Precision_h(:,i)',1]));
     Area_f(i) = trapz(flip([1,Recall_f(:,i)',0]), flip([0,Precision_f(:,i)',1]));

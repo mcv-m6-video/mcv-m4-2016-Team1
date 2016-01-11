@@ -6,7 +6,7 @@ fprintf('Loading general parameters...\n');
 
 %% Select execution options
 
-color_space = 'Gray'; % 'RGB', 'Gray', 'HSV', 'YUV'
+color_space = 'YUV'; % 'RGB', 'Gray', 'HSV', 'YUV'
 
 doTask1 = true;         % 
 
@@ -66,20 +66,20 @@ end
 
 % Show estimated scene
 % Quick preview
-for p = 1:length(forEstim_highway) 
-    imshow(forEstim_highway{p});
-    pause(0.001)
-end
-
-for p = 1:length(forEstim_fall)
-    imshow(forEstim_fall{p});
-    pause(0.001)
-end
-
-for p = 1:length(forEstim_traffic)
-    imshow(forEstim_traffic{p});
-    pause(0.001)
-end
+% for p = 1:length(forEstim_highway) 
+%     imshow(forEstim_highway{p});
+%     pause(0.001)
+% end
+% 
+% for p = 1:length(forEstim_fall)
+%     imshow(forEstim_fall{p});
+%     pause(0.001)
+% end
+% 
+% for p = 1:length(forEstim_traffic)
+%     imshow(forEstim_traffic{p});
+%     pause(0.001)
+% end
 
 
 fprintf('\n FINISHED.\n')

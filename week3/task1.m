@@ -1,4 +1,4 @@
-function [foreEstim, seq_starting_test] = task1(seq,alpha, show_videos, color_space)
+function [foreEstim, seq_starting_test] = task1(seq,alpha, P, show_videos, color_space)
 global params;
 % parameters
 % alpha = 1;
@@ -49,6 +49,9 @@ for f = seq_starting_test : seq_length
             foreEstim{f-seq_starting_test+1} = estimation;
         else
             foreEstim{f-seq_starting_test+1} = imfill(estimation,params.fill_conn,'holes');
+            if P ~= 0
+                foreEstim{f-seq_starting_test+1} = bwareaopen(foreEstim{f-seq_starting_test+1},P);
+            end
         end
         
         if show_videos

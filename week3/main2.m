@@ -14,7 +14,7 @@ doTask1 = true;         %
 %% Load Parameters
 addpath(genpath('.'))
 
-[gt_input_highway,gt_input_fall,gt_input_traffic]=load_gt();
+[gt_input_highway,gt_input_fall,gt_input_traffic] = load_gt();
 [seq_input_highway, seq_input_fall, seq_input_traffic] = load_seqs(color_space);
 
 global params;
@@ -27,9 +27,9 @@ for i = 1:length(params.alpha)
 
     disp(['Computing for: alpha = ', num2str(params.alpha(i)),' and P = ' num2str(params.P(j))]);
     
-    [forEstim_highway, t1_h]= task1(seq_input_highway,params.alpha(i), params.P(j), show_videos_1, color_space);
-    [forEstim_fall,t1_f] = task1(seq_input_fall,params.alpha(i), params.P(j),show_videos_1, color_space);
-    [forEstim_traffic,t1_t]= task1(seq_input_traffic,params.alpha(i), params.P(j),show_videos_1, color_space);
+    [forEstim_highway,  t1_h]   = task1(seq_input_highway,  params.alpha(i), params.P(j), show_videos_1, color_space);
+    [forEstim_fall,     t1_f]   = task1(seq_input_fall,     params.alpha(i), params.P(j), show_videos_1, color_space);
+    [forEstim_traffic,  t1_t]   = task1(seq_input_traffic,  params.alpha(i), params.P(j), show_videos_1, color_space);
 
     
     % Evaluation functions for TASK 1 (TASK 2 and TASK 3)

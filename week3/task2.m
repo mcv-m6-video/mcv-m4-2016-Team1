@@ -1,4 +1,3 @@
-
 function [TP_counter,FP_counter, FN_counter, TN_counter, Precision, Accuracy, Specificity, Recall, F1]= task2(est,gt)
 
 

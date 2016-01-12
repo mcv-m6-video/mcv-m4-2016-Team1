@@ -26,11 +26,10 @@ for i = 1:length(params.alpha)
     for j = 1:length(params.P)
 
     disp(['Computing for: alpha = ', num2str(params.alpha(i)),' and P = ' num2str(params.P(j))]);
-    
+           
     [forEstim_highway,  t1_h]   = task1(seq_input_highway,  params.alpha(i), params.P(j), show_videos_1, color_space);
     [forEstim_fall,     t1_f]   = task1(seq_input_fall,     params.alpha(i), params.P(j), show_videos_1, color_space);
     [forEstim_traffic,  t1_t]   = task1(seq_input_traffic,  params.alpha(i), params.P(j), show_videos_1, color_space);
-
     
     % Evaluation functions for TASK 1 (TASK 2 and TASK 3)
     [TP_h(i,j), FP_h(i,j), FN_h(i,j), TN_h(i,j), Precision_h(i,j), Accuracy_h(i,j), Specificity_h(i,j), Recall_h(i,j), F1_h(i,j)] = task2(forEstim_highway,gt_input_highway(t1_h:end));
@@ -66,10 +65,13 @@ for i = 1: length(params.P)
     Area_h(i) = trapz(flip([1,Recall_h(:,i)',0]), flip([0,Precision_h(:,i)',1]));
     Area_f(i) = trapz(flip([1,Recall_f(:,i)',0]), flip([0,Precision_f(:,i)',1]));
     Area_t(i) = trapz(flip([1,Recall_t(:,i)',0]), flip([0,Precision_t(:,i)',1]));
+    
+    Area(i) = (Area_h(i) + Area_f(i) + Area_t(i)) / 3;
 
     disp(['Area under the curve for the Highway: ', num2str(Area_h(i))])
     disp(['Area under the curve for the Fall: ', num2str(Area_f(i))])
     disp(['Area under the curve for the Traffic: ', num2str(Area_t(i))])
+    disp(['Average area under the curve: ', num2str(Area(i))])
 
 end
 

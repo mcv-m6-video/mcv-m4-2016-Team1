@@ -40,17 +40,54 @@ for i = 1:length(params.alpha)
 end
 
 % Best F1 Score and Alpha
-if params.P == 0
-    [maxF1h,id_h] = max(F1_h(:)); good_alpha_h = alpha(id_h);
-    [maxF1f,id_f] = max(F1_f(:)); good_alpha_f = alpha(id_f);
-    [maxF1t,id_t] = max(F1_t(:)); good_alpha_t = alpha(id_t);
+if length(params.P) == 1
+    if params.FM == 0
+        [maxF1h,id_h] = max(F1_h(:)); good_alpha_h = alpha(id_h);
+        [maxF1f,id_f] = max(F1_f(:)); good_alpha_f = alpha(id_f);
+        [maxF1t,id_t] = max(F1_t(:)); good_alpha_t = alpha(id_t);
 
-    disp(['max F1 highway: ', num2str(maxF1h), ' in alpha: ',num2str(good_alpha_h)]);
-    disp(['max F1 fall: ', num2str(maxF1f), ' in alpha: ',num2str(good_alpha_f)]);
-    disp(['max F1 traffic: ', num2str(maxF1t), ' in alpha: ',num2str(good_alpha_t)]);
+        disp(['max F1 highway: ', num2str(maxF1h), ' in alpha: ',num2str(good_alpha_h)]);
+        disp(['max F1 fall: ', num2str(maxF1f), ' in alpha: ',num2str(good_alpha_f)]);
+        disp(['max F1 traffic: ', num2str(maxF1t), ' in alpha: ',num2str(good_alpha_t)]);
 
-    plot_f1_t2(alpha, F1_h, F1_f, F1_t);
-
+        plot_f1_t2(alpha, F1_h, F1_f, F1_t);
+    
+    else
+        Fbeta_h=0; Fbeta_f=0; Fbeta_t=0;
+        cont_h=0; cont_f=0; cont_t=0;
+        
+        % Apply Foreground Maps
+        for i = 1:length(forEstim_highway)
+            if nnz(gt_input_highway{i+t1_f-1}>=170)==0
+                continue
+            end
+            Fbeta_h = Fbeta_h + WFb(double(forEstim_highway{i}),gt_input_highway{i+t1_h-1}>=170);
+            cont_h = cont_h+1;
+        end
+        for i = 1:length(forEstim_fall)
+            if nnz(gt_input_fall{i+t1_f-1}>=170)==0
+                continue
+            end
+            Fbeta_f = Fbeta_f + WFb(double(forEstim_fall{i}),gt_input_fall{i+t1_f-1}>=170);
+            cont_f = cont_f+1;
+        end
+        for i = 1:length(forEstim_traffic)
+            if nnz(gt_input_traffic{i+t1_f-1}>=170)==0
+                continue
+            end
+            Fbeta_t = Fbeta_t + WFb(double(forEstim_traffic{i}),gt_input_traffic{i+t1_t-1}>=170);
+            cont_t = cont_t+1;
+        end    
+        
+        Fbeta_h = Fbeta_h/cont_h;
+        Fbeta_f = Fbeta_f/cont_f;
+        Fbeta_t = Fbeta_t/cont_t;
+        
+        disp(['Fbeta for the Highway: ', num2str(Fbeta_h)])
+        disp(['Fbeta the curve for the Fall: ', num2str(Fbeta_f)])
+        disp(['Fbeta for the Traffic: ', num2str(Fbeta_t)])
+        
+    end
 end    
 
 

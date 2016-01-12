@@ -40,16 +40,49 @@ for i = 1:length(params.alpha)
 end
 
 % Best F1 Score and Alpha
-if params.P == 0
-    [maxF1h,id_h] = max(F1_h(:)); good_alpha_h = alpha(id_h);
-    [maxF1f,id_f] = max(F1_f(:)); good_alpha_f = alpha(id_f);
-    [maxF1t,id_t] = max(F1_t(:)); good_alpha_t = alpha(id_t);
+if length(params.P) == 1
+    if params.FM == 0
+        [maxF1h,id_h] = max(F1_h(:)); good_alpha_h = alpha(id_h);
+        [maxF1f,id_f] = max(F1_f(:)); good_alpha_f = alpha(id_f);
+        [maxF1t,id_t] = max(F1_t(:)); good_alpha_t = alpha(id_t);
 
-    disp(['max F1 highway: ', num2str(maxF1h), ' in alpha: ',num2str(good_alpha_h)]);
-    disp(['max F1 fall: ', num2str(maxF1f), ' in alpha: ',num2str(good_alpha_f)]);
-    disp(['max F1 traffic: ', num2str(maxF1t), ' in alpha: ',num2str(good_alpha_t)]);
+        disp(['max F1 highway: ', num2str(maxF1h), ' in alpha: ',num2str(good_alpha_h)]);
+        disp(['max F1 fall: ', num2str(maxF1f), ' in alpha: ',num2str(good_alpha_f)]);
+        disp(['max F1 traffic: ', num2str(maxF1t), ' in alpha: ',num2str(good_alpha_t)]);
 
-    plot_f1_t2(alpha, F1_h, F1_f, F1_t);
+        plot_f1_t2(alpha, F1_h, F1_f, F1_t);
+    
+    else
+        Fbeta_h=0; Fbeta_f=0; Fbeta_t=0;
+        cont_h=0; cont_f=0; cont_t=0;
+        
+        % Apply Foreground Maps
+        for i = 1:length(forEstim_highway)
+            if nnz(gt_input_fall{i+t1_f-1}>=170)==0
+                continue
+            end
+            Fbeta_h = Fbeta_h + WFb(double(forEstim_highway{i}),gt_input_highway{i+t1_h-1}>=170);
+        end
+        for i = 1:length(forEstim_fall)
+            if nnz(gt_input_fall{i+t1_f-1}>=170)==0
+                continue
+            end
+            Fbeta_f = Fbeta_f + WFb(double(forEstim_fall{i}),gt_input_fall{i+t1_f-1}>=170);
+            cont_f = con_f+1;
+        end
+        for i = 1:length(forEstim_traffic)
+            Fbeta_t = Fbeta_t + WFb(double(forEstim_traffic{i}),gt_input_traffic{i+t1_t-1}>=170);
+        end    
+        
+        Fbeta_h = Fbeta_h/length(forEstim_highway);
+        Fbeta_f = Fbeta_f/length(forEstim_fall);
+        Fbeta_t = Fbeta_t/length(forEstim_traffic);
+        
+        disp(['Fbeta for the Highway: ', num2str(Fbeta_h)])
+        disp(['Fbeta the curve for the Fall: ', num2str(Fbeta_f)])
+        disp(['Fbeta for the Traffic: ', num2str(Fbeta_t)])
+        
+    end
 
 end    
 
@@ -59,7 +92,8 @@ fprintf('\n--------Plot AUC--------');
 for i = 1: length(params.P)
     
     % Plot Precision VS Recall
-    plot_precision_recall_t3([1,Recall_h(:,i)',0], [1,Recall_f(:,i)',0], [1,Recall_t(:,i)',0], [0,Precision_h(:,i)',1], [0,Precision_f(:,i)',1], [0,Precision_t(:,i)',1]);
+    % plot_precision_recall_t3([1,Recall_h(:,i)',0], [1,Recall_f(:,i)',0], [1,Recall_t(:,i)',0], [0,Precision_h(:,i)',1], [0,Precision_f(:,i)',1], [0,Precision_t(:,i)',1]);
+    plot_PR_Combined([1,Recall_h(:,i)',0], [1,Recall_f(:,i)',0], [1,Recall_t(:,i)',0], [0,Precision_h(:,i)',1], [0,Precision_f(:,i)',1], [0,Precision_t(:,i)',1]);
 
     % Calculate the area under the curve
     Area_h(i) = trapz(flip([1,Recall_h(:,i)',0]), flip([0,Precision_h(:,i)',1]));
@@ -72,7 +106,7 @@ for i = 1: length(params.P)
 
 end
 
-if params.P > 1
+if length(params.P) > 1
 
     % Plots the Area vs the number of pixels used in bwareaopen
     plot_task2(Area_h,Area_f,Area_t);

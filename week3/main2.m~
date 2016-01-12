@@ -59,8 +59,7 @@ fprintf('\n--------Plot AUC--------');
 for i = 1: length(params.P)
     
     % Plot Precision VS Recall
-    % plot_precision_recall_t3([1,Recall_h(:,i)',0], [1,Recall_f(:,i)',0], [1,Recall_t(:,i)',0], [0,Precision_h(:,i)',1], [0,Precision_f(:,i)',1], [0,Precision_t(:,i)',1]);
-    plot_PR_Combined([1,Recall_h(:,i)',0], [1,Recall_f(:,i)',0], [1,Recall_t(:,i)',0], [0,Precision_h(:,i)',1], [0,Precision_f(:,i)',1], [0,Precision_t(:,i)',1]);
+    plot_precision_recall_t3([1,Recall_h(:,i)',0], [1,Recall_f(:,i)',0], [1,Recall_t(:,i)',0], [0,Precision_h(:,i)',1], [0,Precision_f(:,i)',1], [0,Precision_t(:,i)',1]);
 
     % Calculate the area under the curve
     Area_h(i) = trapz(flip([1,Recall_h(:,i)',0]), flip([0,Precision_h(:,i)',1]));
@@ -73,7 +72,7 @@ for i = 1: length(params.P)
 
 end
 
-if length(params.P) > 1
+if params.P > 1
 
     % Plots the Area vs the number of pixels used in bwareaopen
     plot_task2(Area_h,Area_f,Area_t);

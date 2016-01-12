@@ -55,16 +55,19 @@ for f = seq_starting_test : seq_length
                 foreEstim{f-seq_starting_test+1} = bwareaopen(foreEstim{f-seq_starting_test+1},P);
             end
             if params.closing ~= 0
-                SE = ones(params.closing);
-                foreEstim_old = foreEstim;
-                foreEstim{f-seq_starting_test+1} = imclose(foreEstim{f-seq_starting_test+1}, SE);
+                SE_close = ones(params.closing);
+                SE_open = ones(params.opening);
+                foreEstim_base = foreEstim;
+                foreEstim_open{f-seq_starting_test+1}       = imopen(foreEstim{f-seq_starting_test+1}, SE_open);
+                foreEstim_open_close{f-seq_starting_test+1} = imclose(foreEstim_open{f-seq_starting_test+1}, SE_close);
+                foreEstim = foreEstim_open_close;
             end
             
         end
         
         if show_videos
             subplot(2,2,1)
-            imshow(foreEstim_old{f-seq_starting_test+1})
+            imshow(foreEstim_base{f-seq_starting_test+1})
             subplot(2,2,2)
             if(strcmp(color_space,'HSV'))
                 input_to_show = hsv2rgb(double(seq{f})/255);
@@ -77,9 +80,10 @@ for f = seq_starting_test : seq_length
             
             subplot(2,2,3)
             %imshow(uint8(seq_mean_to_show))
-            imshow(foreEstim{f-seq_starting_test+1})
+            imshow(foreEstim_open{f-seq_starting_test+1})
             subplot(2,2,4)
-            imshow(uint8(seq_std_to_show))
+%             imshow(uint8(seq_std_to_show))
+            imshow(foreEstim_open_close{f-seq_starting_test+1})
             pause(0.001);
         end
         

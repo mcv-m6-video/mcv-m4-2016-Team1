@@ -81,10 +81,13 @@ if length(params.P) == 1
         Fbeta_h = Fbeta_h/cont_h;
         Fbeta_f = Fbeta_f/cont_f;
         Fbeta_t = Fbeta_t/cont_t;
+        Fbeta_avg = (Fbeta_h + Fbeta_f + Fbeta_t)/3;
         
         disp(['Fbeta for the Highway: ', num2str(Fbeta_h)])
         disp(['Fbeta the curve for the Fall: ', num2str(Fbeta_f)])
         disp(['Fbeta for the Traffic: ', num2str(Fbeta_t)])
+        disp(['Fbeta for the Average: ', num2str(Fbeta_avg)])
+        
         
     end
 end    

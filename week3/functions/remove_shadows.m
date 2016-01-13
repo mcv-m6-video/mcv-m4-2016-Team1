@@ -1,4 +1,4 @@
-function seq_without_shadows = remove_shadows(seq_estimated_foregrounds, seq_original, seq_mean, color_space)
+function seq_without_shadows = remove_shadows(seq_estimated_foregrounds, seq_original, seq_mean, show_videos, color_space)
     assert(length(seq_estimated_foregrounds)==length(seq_original));
     
     global params;
@@ -41,17 +41,19 @@ function seq_without_shadows = remove_shadows(seq_estimated_foregrounds, seq_ori
         
         seq_without_shadows{i} = estimation & ~(cond1 & cond2 & cond3);
         
-        figure(1)
-        subplot(1,3,1)        
-        imshow(estimation)
-        title('estimation 0')
-        subplot(1,3,2)
-        imshow(seq_without_shadows{i})
-        title('estimation without shadows')
-        subplot(1,3,3)        
-        imshow(seq_original{i})
-        title('original')
-        pause
+        if(show_videos)
+            figure(1)
+            subplot(1,3,1)
+            imshow(estimation)
+            title('estimation 0')
+            subplot(1,3,2)
+            imshow(seq_without_shadows{i})
+            title('estimation without shadows')
+            subplot(1,3,3)
+            imshow(seq_original{i})
+            title('original')
+            pause(0.01)
+        end
 %         figure(3)
 %         imshow(cond1 & cond2 & cond3);
 %         pause;

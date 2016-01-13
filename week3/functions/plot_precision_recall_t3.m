@@ -1,6 +1,6 @@
 function [] = plot_precision_recall_t3(Recall_h, Recall_f, Recall_t, Precision_h, Precision_f, Precision_t)    
 
-fprintf('Plotting Precision vs Recall...\n')
+fprintf('\nPlotting Precision vs Recall...\n')
     
     figure()
     subplot(1,3,1)
@@ -24,3 +24,4 @@ fprintf('Plotting Precision vs Recall...\n')
     xlabel('Recall')
     ylabel('Precision')
     
+   

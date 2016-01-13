@@ -15,8 +15,15 @@ function params = load_parameters()
 %     params.P = [20:50:400];         % highway 90, other 390.
     params.P = [390];         % highway 90, other 390.
     
-    params.SR_alpha = 0.2;
-    params.SR_beta = 0.7;
+%     params.SR_alpha = 0.2;
+%     params.SR_beta = 0.7;
+%     params.SR_tauH = 0.5;
+%     params.SR_tauS = 0.2;
+    
+    % paper
+    params.SR_alpha = 0.4;
+    params.SR_beta = 0.6;
     params.SR_tauH = 0.5;
-    params.SR_tauS = 0.2;
+    params.SR_tauS = 0.1;
+
 end

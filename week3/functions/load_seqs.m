@@ -13,7 +13,7 @@ fileTSet_input=dir(folderTName_input);
 
 %Load all entire sequence
 %INPUT
-seq_input_highway = cell(length(fileHSet_input));
+seq_input_highway = cell(1,length(fileHSet_input));
 for i=1:length(fileHSet_input)
     seq_input_highway{i}=imread(strcat('../highway/input/',fileHSet_input(i).name));
     if(strcmp(color_space,'Gray'))
@@ -26,7 +26,7 @@ for i=1:length(fileHSet_input)
     
 end
 
-seq_input_fall = cell(length(fileFSet_input));
+seq_input_fall = cell(1,length(fileFSet_input));
 for i=1:length(fileFSet_input)
     seq_input_fall{i}=imread(strcat('../fall/input/',fileFSet_input(i).name));
     if(strcmp(color_space,'Gray'))
@@ -39,7 +39,7 @@ for i=1:length(fileFSet_input)
     
 end
 
-seq_input_traffic = cell(length(fileTSet_input));
+seq_input_traffic = cell(1,length(fileTSet_input));
 for i=1:length(fileTSet_input)
     seq_input_traffic{i}=imread(strcat('../traffic/input/',fileTSet_input(i).name));
     if(strcmp(color_space,'Gray'))

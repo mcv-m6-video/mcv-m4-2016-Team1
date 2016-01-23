@@ -1,0 +1,25 @@
+function print_bb_with_id( frame, id_, x1, y1, x2, y2 )
+%UNTITLED3 Summary of this function goes here
+%   Detailed explanation goes here
+
+    for id = 1 : length(id)
+
+        text_str = ['ID:', num2str(id(id))];
+        text_position = [x1(id) y1(id) - 20];
+
+        output_frame = insertText(frame, text_position, text_str, 'FontSize',14,'BoxColor',box_color,'BoxOpacity',0.4,'TextColor','white');
+
+    end
+
+    imshow(output_frame); title('Red box shows object region');
+    hold on;
+        for id = 1 : length(id)
+
+            bb_position = [x1(id), y1(id), x2(id), y2(id)];
+
+            rectangle('Position', bb_position, 'EdgeColor','r','LineWidth',2 )
+        end
+    hold off;
+    drawnow;
+end
+

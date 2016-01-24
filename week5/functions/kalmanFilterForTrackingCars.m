@@ -87,24 +87,29 @@ function trackSingleObject(param)
   utilities = createUtilities(param);
 
   isTrackInitialized = false;
+  idx = 1;
   while ~isDone(utilities.videoReader)
     frame = readFrame();
-
+    
     % Detect the car.
     [detectedLocation, isObjectDetected] = detectObject(frame);
 
     for i=1:size(detectedLocation,1)
-        if ~isTrackInitialized
+        
+        []
+        
+        
+        if ~isTrackInitialized(idx)
             if isObjectDetected
                 % Initialize a track by creating a Kalman filter when the car is
                 % detected for the first time.
                 initialLocation = computeInitialLocation(param, detectedLocation(i,:));
-                kalmanFilter = configureKalmanFilter(param.motionModel, ...
+                kalmanFilter{idx} = configureKalmanFilter(param.motionModel, ...
                     initialLocation, param.initialEstimateError, ...
                     param.motionNoise, param.measurementNoise);
                 
-                isTrackInitialized = true;
-                trackedLocation = correct(kalmanFilter, detectedLocation(i,:));
+                isTrackInitialized(idx)  = true;
+                trackedLocation = correct(kalmanFilter{idx} , detectedLocation(i,:));
                 label = 'Initial';
             else
                 trackedLocation = [];

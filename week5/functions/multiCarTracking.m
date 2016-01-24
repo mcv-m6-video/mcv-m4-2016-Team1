@@ -52,9 +52,10 @@ tracks = initializeTracks(); % Create an empty array of tracks.
 nextId = 1; % ID of the next track
 
 % Detect moving objects, and track them across video frames.
-while ~isDone(obj.reader)
-    frame = readFrame();
-    [centroids, bboxes, mask] = detectObjects(frame);
+while ~isDone(obj.reader) && ~isDone(obj.foreground_reader)
+    frame = obj.reader.step();
+    mask = obj.foreground_reader.step();
+    [centroids, bboxes] = detectObjects(mask);
     predictNewLocationsOfTracks();
     [assignments, unassignedTracks, unassignedDetections] = ...
         detectionToTrackAssignment();
@@ -78,8 +79,10 @@ end
         % objects in each frame, and playing the video.
         
         % Create a video file reader.
-       % obj.reader = vision.VideoFileReader('../highway.avi');
+        % obj.reader = vision.VideoFileReader('../highway.avi');
+        % obj.foreground_reader = vision.VideoFileReader('../foreground_highway.avi');
         obj.reader = vision.VideoFileReader('../traffic.avi');
+        obj.foreground_reader = vision.VideoFileReader('../foreground_traffic.avi');
         
         % Create two video players, one to display the video,
         % and one to display the foreground mask.
@@ -93,8 +96,8 @@ end
         % of 1 corresponds to the foreground and the value of 0 corresponds
         % to the background. 
         
-        obj.detector = vision.ForegroundDetector('NumGaussians', 3, ...
-            'NumTrainingFrames', 40, 'MinimumBackgroundRatio', 0.7);
+        %obj.detector = vision.ForegroundDetector('NumGaussians', 3, ...
+        %    'NumTrainingFrames', 40, 'MinimumBackgroundRatio', 0.7);
         
         % Connected groups of foreground pixels are likely to correspond to moving
         % objects.  The blob analysis system object is used to find such groups
@@ -150,11 +153,6 @@ end
             'consecutiveInvisibleCount', {});
     end
 
-%% Read a Video Frame
-% Read the next video frame from the video file.
-    function frame = readFrame()
-        frame = obj.reader.step();
-    end
 
 %% Detect Objects
 % The |detectObjects| function returns the centroids and the bounding boxes
@@ -166,18 +164,21 @@ end
 % It then performs morphological operations on the resulting binary mask to
 % remove noisy pixels and to fill the holes in the remaining blobs.  
 
-    function [centroids, bboxes, mask] = detectObjects(frame)
+    function [centroids, bboxes] = detectObjects(mask_frame)
+        mask_frame = rgb2gray(mask_frame);
+        mask_frame(mask_frame~=0) = 1;
+        mask_frame = logical(mask_frame);
         
         % Detect foreground.
-        mask = obj.detector.step(frame);
-        
-        % Apply morphological operations to remove noise and fill in holes.
-        mask = imopen(mask, strel('rectangle', [3,3]));
-        mask = imclose(mask, strel('rectangle', [15, 15])); 
-        mask = imfill(mask, 'holes');
-        
+%         mask = obj.detector.step(frame);
+%         
+%         % Apply morphological operations to remove noise and fill in holes.
+%         mask = imopen(mask, strel('rectangle', [3,3]));
+%         mask = imclose(mask, strel('rectangle', [15, 15])); 
+%         mask = imfill(mask, 'holes');
+
         % Perform blob analysis to find connected components.
-        [~, centroids, bboxes] = obj.blobAnalyser.step(mask);
+        [~, centroids, bboxes] = obj.blobAnalyser.step(mask_frame);
     end
 
 %% Predict New Locations of Existing Tracks
@@ -362,7 +363,7 @@ end
     function displayTrackingResults()
         % Convert the frame and the mask to uint8 RGB.
         frame = im2uint8(frame);
-        mask = uint8(repmat(mask, [1, 1, 3])) .* 255;
+%         mask = uint8(repmat(mask, [1, 1, 3])) .* 255;
         
         minVisibleCount = 8;
         if ~isempty(tracks)

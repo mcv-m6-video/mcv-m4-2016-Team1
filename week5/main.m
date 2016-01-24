@@ -23,8 +23,8 @@ show_videos = false;
 addpath(genpath('.'))
 
 [seq_highway, gt_highway, seq_traffic, gt_traffic] = load_seqs(color_space);
-% save_sequence(seq_highway,'highway');
-% save_sequence(seq_traffic,'traffic');
+% save_sequence(seq_highway,'highway', 10);
+save_sequence(seq_traffic,'traffic', 5);
 
 global params;
 params = load_parameters();
@@ -36,8 +36,8 @@ if (doTask1)
     disp('Apply the background substraction work previously done.')
     foreEstim_highway = backgroundSubstraction(seq_highway,params.alpha, params.P, show_videos, color_space);
     foreEstim_traffic = backgroundSubstraction(seq_traffic,params.alpha, params.P, show_videos, color_space);
-    save_sequence(foreEstim_highway,'foreground_highway');
-    save_sequence(foreEstim_traffic,'foreground_traffic');
+%     save_sequence(foreEstim_highway,'foreground_highway', 10);
+%     save_sequence(foreEstim_traffic,'foreground_traffic', 5);
     
     disp('Use Kalman filter to track each vehicle appearing in the sequence.')
     

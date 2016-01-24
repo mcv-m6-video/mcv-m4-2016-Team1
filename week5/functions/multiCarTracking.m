@@ -79,8 +79,8 @@ end
         % objects in each frame, and playing the video.
         
         % Create a video file reader.
-        % obj.reader = vision.VideoFileReader('../highway.avi');
-        % obj.foreground_reader = vision.VideoFileReader('../foreground_highway.avi');
+        %obj.reader = vision.VideoFileReader('../highway.avi');
+        %obj.foreground_reader = vision.VideoFileReader('../foreground_highway.avi');
         obj.reader = vision.VideoFileReader('../traffic.avi');
         obj.foreground_reader = vision.VideoFileReader('../foreground_traffic.avi');
         
@@ -165,18 +165,11 @@ end
 % remove noisy pixels and to fill the holes in the remaining blobs.  
 
     function [centroids, bboxes] = detectObjects(mask_frame)
+        
         mask_frame = rgb2gray(mask_frame);
         mask_frame(mask_frame~=0) = 1;
         mask_frame = logical(mask_frame);
         
-        % Detect foreground.
-%         mask = obj.detector.step(frame);
-%         
-%         % Apply morphological operations to remove noise and fill in holes.
-%         mask = imopen(mask, strel('rectangle', [3,3]));
-%         mask = imclose(mask, strel('rectangle', [15, 15])); 
-%         mask = imfill(mask, 'holes');
-
         % Perform blob analysis to find connected components.
         [~, centroids, bboxes] = obj.blobAnalyser.step(mask_frame);
     end

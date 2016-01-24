@@ -25,7 +25,7 @@ else
     seq_mean_to_show = seq_mean;
     seq_std_to_show = seq_std;
 end
-
+seq_starting_test = 1;
 for f = seq_starting_test : seq_length
     
     % We pick as foreground those pixels which differ too much from the mean

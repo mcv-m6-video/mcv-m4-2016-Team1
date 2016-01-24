@@ -5,7 +5,7 @@ v.FrameRate = 10;
 open(v);
 for i=1:length(sequence)
 %     im = flip(sequence{i},1);
-    writeVideo(v,sequence{i});    
+    writeVideo(v,double(sequence{i}));    
 end
 close(v);
 

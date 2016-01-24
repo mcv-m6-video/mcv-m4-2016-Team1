@@ -78,7 +78,8 @@ end
         % objects in each frame, and playing the video.
         
         % Create a video file reader.
-        obj.reader = vision.VideoFileReader('../highway.avi');
+       % obj.reader = vision.VideoFileReader('../highway.avi');
+        obj.reader = vision.VideoFileReader('../traffic.avi');
         
         % Create two video players, one to display the video,
         % and one to display the foreground mask.

@@ -22,6 +22,8 @@ show_seq = true;
 addpath(genpath('.'))
 
 [seq_highway, gt_highway, seq_traffic, gt_traffic] = load_seqs(color_space);
+% save_sequence(seq_highway,'highway');
+% save_sequence(seq_traffic,'traffic');
 
 global params;
 params = load_parameters();
@@ -59,7 +61,7 @@ if(doTask2)
         % This function prints a red bounding box and an id
         
         print_bb_with_id( frame, id, x1, y1, x2, y2 )
-
+        
         disp([num2str(index), '/', num2str(length(seq_highway))])
         
     end
@@ -86,9 +88,9 @@ if(doTask4)
     disp('Test another tracking method:')
     disp('https://saravananthirumuruganathan.wordpress.com/2010/04/01/introduction-to-mean-shift-algorithm/')
     disp('http://areshmatlab.blogspot.com.es/2010/06/meanshift-tracking-algorithm.html')
-        
+    
     matlab_mean_shift(seq_highway)
-
+    
 end
 
 %% Task 5
@@ -99,5 +101,5 @@ if(doTask5)
     disp('----- TASK 5 -----')
     disp('Record a video sequence with traffic monitoring.')
     disp('(optional) Generate a simple speed ground truth with in-vehicle recording of the speed meter.')
-
+    
 end

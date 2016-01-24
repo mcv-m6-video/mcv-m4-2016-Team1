@@ -81,7 +81,7 @@ end
         % Create a video file reader.
         obj.reader = vision.VideoFileReader('../highway.avi');
         obj.foreground_reader = vision.VideoFileReader('../foreground_highway.avi');
-        %obj.reader = vision.VideoFileReader('../traffic.avi');
+       % obj.reader = vision.VideoFileReader('../traffic.avi');
         %obj.foreground_reader = vision.VideoFileReader('../foreground_traffic.avi');
         
         % Create two video players, one to display the video,
@@ -97,7 +97,7 @@ end
         
         obj.blobAnalyser = vision.BlobAnalysis('BoundingBoxOutputPort', true, ...
             'AreaOutputPort', true, 'CentroidOutputPort', true, ...
-            'MinimumBlobArea', 120);
+            'MinimumBlobArea', 180, 'Connectivity',4); %MinimumBlobArea Traffic: 400; Highway: 180
     end
 
 %% Initialize Tracks
@@ -288,8 +288,8 @@ end
             return;
         end
         
-        invisibleForTooLong = 10;
-        ageThreshold = 8;
+        invisibleForTooLong = 5; %Highway: 10 %Traffic: 5
+        ageThreshold = 3; %Highway: 8 %Traffic: 3
         
         % Compute the fraction of the track's age for which it was visible.
         ages = [tracks(:).age];
@@ -390,7 +390,7 @@ end
         % Display the mask and the frame.
         obj.maskPlayer.step(mask);        
         obj.videoPlayer.step(frame);
-        pause(0.05)
+        pause(0.03)
     end
 
 %% Summary

@@ -6,7 +6,7 @@ fprintf('Loading general parameters...\n');
 
 %% Select execution options
 
-color_space = 'RGB'; % 'RGB', 'Gray', 'HSV', 'YUV'
+color_space = 'YUV'; % 'RGB', 'Gray', 'HSV', 'YUV'
 
 doTask1 = false;
 doTask2 = false;
@@ -16,6 +16,7 @@ doTask5 = false;
 
 show_plots = false;
 show_seq = true;
+show_videos = false;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load Parameters
@@ -31,8 +32,15 @@ params = load_parameters();
 %% Task1
 if (doTask1)
     disp('----- TASK 1 -----')
-    disp('Use Kalman filter to track each vehicle appearing in the sequence.')
+    
     disp('Apply the background substraction work previously done.')
+    foreEstim_highway = backgroundSubstraction(seq_highway,params.alpha, params.P, show_videos, color_space);
+    foreEstim_traffic = backgroundSubstraction(seq_traffic,params.alpha, params.P, show_videos, color_space);
+    
+    disp('Use Kalman filter to track each vehicle appearing in the sequence.')
+    
+    
+    
 end
 
 %% Task 2

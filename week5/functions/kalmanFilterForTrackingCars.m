@@ -93,36 +93,38 @@ function trackSingleObject(param)
     % Detect the car.
     [detectedLocation, isObjectDetected] = detectObject(frame);
 
-    if ~isTrackInitialized
-      if isObjectDetected
-        % Initialize a track by creating a Kalman filter when the car is
-        % detected for the first time.
-        initialLocation = computeInitialLocation(param, detectedLocation);
-        kalmanFilter = configureKalmanFilter(param.motionModel, ...
-          initialLocation, param.initialEstimateError, ...
-          param.motionNoise, param.measurementNoise);
-
-        isTrackInitialized = true;
-        trackedLocation = correct(kalmanFilter, detectedLocation);
-        label = 'Initial';
-      else
-        trackedLocation = [];
-        label = '';
-      end
-
-    else
-      % Use the Kalman filter to track the car.
-      if isObjectDetected % The car was detected.
-        % Reduce the measurement noise by calling predict followed by
-        % correct.
-        predict(kalmanFilter);
-        trackedLocation = correct(kalmanFilter, detectedLocation);
-        label = 'Corrected';
-      else % The car was missing.
-        % Predict the car's location.
-        trackedLocation = predict(kalmanFilter);
-        label = 'Predicted';
-      end
+    for i=1:size(detectedLocation,1)
+        if ~isTrackInitialized
+            if isObjectDetected
+                % Initialize a track by creating a Kalman filter when the car is
+                % detected for the first time.
+                initialLocation = computeInitialLocation(param, detectedLocation(i,:));
+                kalmanFilter = configureKalmanFilter(param.motionModel, ...
+                    initialLocation, param.initialEstimateError, ...
+                    param.motionNoise, param.measurementNoise);
+                
+                isTrackInitialized = true;
+                trackedLocation = correct(kalmanFilter, detectedLocation(i,:));
+                label = 'Initial';
+            else
+                trackedLocation = [];
+                label = '';
+            end
+            
+        else
+            % Use the Kalman filter to track the car.
+            if isObjectDetected % The car was detected.
+                % Reduce the measurement noise by calling predict followed by
+                % correct.
+                predict(kalmanFilter);
+                trackedLocation = correct(kalmanFilter, detectedLocation(i,:));
+                label = 'Corrected';
+            else % The car was missing.
+                % Predict the car's location.
+                trackedLocation = predict(kalmanFilter);
+                label = 'Predicted';
+            end
+        end
     end
 
     annotateTrackedObject();
@@ -324,7 +326,7 @@ function [detection, isObjectDetected] = detectObject(frame)
     isObjectDetected = false;
   else
     % To simplify the tracking process, only use the first detected object.
-    detection = detection(1, :);
+    %detection = detection(1, :);
     isObjectDetected = true;
   end
 end
@@ -394,7 +396,8 @@ end
 function utilities = createUtilities(param)
   % Create System objects for reading video, displaying video, extracting
   % foreground, and analyzing connected components.
-  utilities.videoReader = vision.VideoFileReader('highway.avi');
+  utilities.videoReader = vision.VideoFileReader('../highway.avi');
+  %utilities.videoReader = vision.VideoFileReader('../traffic.avi');
   utilities.videoPlayer = vision.VideoPlayer('Position', [100,100,500,400]);
   utilities.foregroundDetector = vision.ForegroundDetector(...
     'NumTrainingFrames', 10, 'InitialVariance', param.segmentationThreshold);

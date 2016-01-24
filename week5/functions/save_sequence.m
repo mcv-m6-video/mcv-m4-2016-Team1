@@ -8,5 +8,6 @@ for i=1:length(sequence)
     writeVideo(v,im2uint8(sequence{i}));    
 end
 close(v);
+implay([name,'.avi']);
 
 end

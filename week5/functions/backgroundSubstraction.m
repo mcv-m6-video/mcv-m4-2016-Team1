@@ -63,6 +63,7 @@ for f = seq_starting_test : seq_length
                 foreEstim{f-seq_starting_test+1} = foreEstim_open_close{f-seq_starting_test+1};
             end
             foreEstim{f-seq_starting_test+1} = imfill(foreEstim{f-seq_starting_test+1},params.fill_conn,'holes');
+            foreEstim{f-seq_starting_test+1} = imerode(foreEstim{f-seq_starting_test+1},strel('diamond',3));
         end
         
         if show_videos

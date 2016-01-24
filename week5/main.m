@@ -8,10 +8,10 @@ fprintf('Loading general parameters...\n');
 
 color_space = 'YUV'; % 'RGB', 'Gray', 'HSV', 'YUV'
 
-doTask1 = false;
+doTask1 = true;
 doTask2 = false;
 doTask3 = false;
-doTask4 = true;
+doTask4 = false;
 doTask5 = false;
 
 show_plots = false;
@@ -36,6 +36,8 @@ if (doTask1)
     disp('Apply the background substraction work previously done.')
     foreEstim_highway = backgroundSubstraction(seq_highway,params.alpha, params.P, show_videos, color_space);
     foreEstim_traffic = backgroundSubstraction(seq_traffic,params.alpha, params.P, show_videos, color_space);
+    save_sequence(foreEstim_highway,'foreground_highway');
+    save_sequence(foreEstim_traffic,'foreground_traffic');
     
     disp('Use Kalman filter to track each vehicle appearing in the sequence.')
     

@@ -79,26 +79,17 @@ end
         % objects in each frame, and playing the video.
         
         % Create a video file reader.
-        %obj.reader = vision.VideoFileReader('../highway.avi');
-        %obj.foreground_reader = vision.VideoFileReader('../foreground_highway.avi');
-        obj.reader = vision.VideoFileReader('../traffic.avi');
-        obj.foreground_reader = vision.VideoFileReader('../foreground_traffic.avi');
+        obj.reader = vision.VideoFileReader('../highway.avi');
+        obj.foreground_reader = vision.VideoFileReader('../foreground_highway.avi');
+        %obj.reader = vision.VideoFileReader('../traffic.avi');
+        %obj.foreground_reader = vision.VideoFileReader('../foreground_traffic.avi');
         
         % Create two video players, one to display the video,
         % and one to display the foreground mask.
         obj.videoPlayer = vision.VideoPlayer('Position', [20, 400, 700, 400]);
         obj.maskPlayer = vision.VideoPlayer('Position', [740, 400, 700, 400]);
         
-        % Create system objects for foreground detection and blob analysis
-        
-        % The foreground detector is used to segment moving objects from
-        % the background. It outputs a binary mask, where the pixel value
-        % of 1 corresponds to the foreground and the value of 0 corresponds
-        % to the background. 
-        
-        %obj.detector = vision.ForegroundDetector('NumGaussians', 3, ...
-        %    'NumTrainingFrames', 40, 'MinimumBackgroundRatio', 0.7);
-        
+
         % Connected groups of foreground pixels are likely to correspond to moving
         % objects.  The blob analysis system object is used to find such groups
         % (called 'blobs' or 'connected components'), and compute their
@@ -106,7 +97,7 @@ end
         
         obj.blobAnalyser = vision.BlobAnalysis('BoundingBoxOutputPort', true, ...
             'AreaOutputPort', true, 'CentroidOutputPort', true, ...
-            'MinimumBlobArea', 400);
+            'MinimumBlobArea', 120);
     end
 
 %% Initialize Tracks
@@ -297,7 +288,7 @@ end
             return;
         end
         
-        invisibleForTooLong = 20;
+        invisibleForTooLong = 10;
         ageThreshold = 8;
         
         % Compute the fraction of the track's age for which it was visible.
@@ -356,7 +347,6 @@ end
     function displayTrackingResults()
         % Convert the frame and the mask to uint8 RGB.
         frame = im2uint8(frame);
-%         mask = uint8(repmat(mask, [1, 1, 3])) .* 255;
         
         minVisibleCount = 8;
         if ~isempty(tracks)
@@ -400,6 +390,7 @@ end
         % Display the mask and the frame.
         obj.maskPlayer.step(mask);        
         obj.videoPlayer.step(frame);
+        pause(0.05)
     end
 
 %% Summary

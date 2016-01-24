@@ -62,7 +62,7 @@ for f = seq_starting_test : seq_length
                 foreEstim_open_close{f-seq_starting_test+1} = imclose(foreEstim_open{f-seq_starting_test+1}, SE_close);
                 foreEstim{f-seq_starting_test+1} = foreEstim_open_close{f-seq_starting_test+1};
             end
-            
+            foreEstim{f-seq_starting_test+1} = imfill(estimation,params.fill_conn,'holes');
         end
         
         if show_videos

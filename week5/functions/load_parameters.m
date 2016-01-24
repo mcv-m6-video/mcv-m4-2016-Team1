@@ -19,7 +19,7 @@ function params = load_parameters()
     params.P = 90;
     params.fill_conn = 4;
     params.opening = 3;%10;  
-    params.closing = 15;%15;
+    params.closing = 11;%15;
     
     
 end

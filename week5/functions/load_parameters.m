@@ -16,7 +16,7 @@ function params = load_parameters()
     
     %% Task 5
     params.alpha = 1.8;
-    params.P = 390;
+    params.P = 90;
     params.fill_conn = 4;
     params.opening = 10;%10;  
     params.closing = 15;%15;

@@ -54,27 +54,7 @@ if(doTask2)
     disp('----- TASK 2 -----')
     disp('Draw a bounding box around each vehicle with an ID counter.')
     
-    figure(1); imshow(seq_highway{1}); title('Red box shows object region');
-    drawnow;
-    
-    for index = 2 : length(seq_highway)
-        frame = seq_highway{index};
-        
-        % We need to initialize this variables
-        
-        id = [1];
-        x1 = [20 + frame];
-        y1 = [20 + frame];
-        x2 = [100 + frame];
-        y2 = [100 + frame];
-        
-        % This function prints a red bounding box and an id
-        
-        print_bb_with_id( frame, id, x1, y1, x2, y2 )
-        
-        disp([num2str(index), '/', num2str(length(seq_highway))])
-        
-    end
+    disp('We did that task embeded in every single task that requires it. (task1, task4 & task5)')
     
 end
 

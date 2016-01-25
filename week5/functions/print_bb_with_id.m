@@ -1,4 +1,4 @@
-function print_bb_with_id( frame, id, x1, y1, x2, y2 )
+function print_bb_with_id( frame, id, x1, y1, width, heigth )
 %UNTITLED3 Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -18,7 +18,7 @@ function print_bb_with_id( frame, id, x1, y1, x2, y2 )
     hold on;
         for index_id = 1 : length(id)
 
-            bb_position = [x1(index_id), y1(index_id), x2(index_id), y2(index_id)];
+            bb_position = [x1(index_id), y1(index_id), width(index_id), heigth(index_id)];
 
             rectangle('Position', bb_position, 'EdgeColor','r','LineWidth',2 )
         end

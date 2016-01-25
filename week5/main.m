@@ -6,12 +6,12 @@ fprintf('Loading general parameters...\n');
 
 %% Select execution options
 
-color_space = 'YUV'; % 'RGB', 'Gray', 'HSV', 'YUV'
+color_space = 'RGB'; % 'RGB', 'Gray', 'HSV', 'YUV'
 
-doTask1 = true;
+doTask1 = false;
 doTask2 = false;
 doTask3 = false;
-doTask4 = false;
+doTask4 = true;
 doTask5 = false;
 
 show_plots = false;
@@ -83,6 +83,7 @@ end
 %     
 % end
 
+
 %% Task 3
 if(doTask3)
     disp('press any key to execute task 3')
@@ -104,7 +105,11 @@ if(doTask4)
     disp('https://saravananthirumuruganathan.wordpress.com/2010/04/01/introduction-to-mean-shift-algorithm/')
     disp('http://areshmatlab.blogspot.com.es/2010/06/meanshift-tracking-algorithm.html')
     
-    matlab_mean_shift(seq_highway)
+    %matlab_mean_shift(seq_highway)
+    
+    %filename = 'highway';
+    
+    matlab_mean_shift_avi()
     
 end
 

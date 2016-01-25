@@ -29,54 +29,59 @@ addpath(genpath('.'))
 global params;
 params = load_parameters();
 
-%% Task1
+%% Task1 + Task2
 if (doTask1)
     disp('----- TASK 1 -----')
-    
-    disp('Apply the background substraction work previously done.')
-    foreEstim_highway = backgroundSubstraction(seq_highway,params.alpha, params.P, show_videos, color_space);
-    foreEstim_traffic = backgroundSubstraction(seq_traffic,params.alpha, params.P, show_videos, color_space);
-    save_sequence(foreEstim_highway,'foreground_highway', 10);
+    disp('----- TASK 2 -----')
+%     disp('Apply the background substraction work previously done.')
+%     foreEstim_highway = backgroundSubstraction(seq_highway,params.alpha, params.P, show_videos, color_space);
+%     foreEstim_traffic = backgroundSubstraction(seq_traffic,params.alpha, params.P, show_videos, color_space);
+%     save_sequence(foreEstim_highway,'foreground_highway', 10);
 %     save_sequence(foreEstim_traffic,'foreground_traffic', 5);
     
-    disp('Use Kalman filter to track each vehicle appearing in the sequence.')
+    disp('Task1: Use Kalman filter to track each vehicle appearing in the sequence.')
     
+    disp('Task2: Draw a bounding box around each vehicle with an ID counter.')
     
+    multiCarTracking('highway');
+    pause;
+    disp('Press any key to continue with the second sequence:')
+    multiCarTracking('traffic');
     
 end
 
 %% Task 2
 
-if(doTask2)
-    disp('press any key to execute task 2')
-    pause;
-    close all;
-    disp('----- TASK 2 -----')
-    disp('Draw a bounding box around each vehicle with an ID counter.')
-    
-    figure(1); imshow(seq_highway{1}); title('Red box shows object region');
-    drawnow;
-    
-    for index = 2 : length(seq_highway)
-        frame = seq_highway{index};
-        
-        % We need to initialize this variables
-        
-        id = [1];
-        x1 = [20 + frame];
-        y1 = [20 + frame];
-        x2 = [100 + frame];
-        y2 = [100 + frame];
-        
-        % This function prints a red bounding box and an id
-        
-        print_bb_with_id( frame, id, x1, y1, x2, y2 )
-        
-        disp([num2str(index), '/', num2str(length(seq_highway))])
-        
-    end
-    
-end
+% if(doTask2)
+%     disp('press any key to execute task 2')
+%     pause;
+%     close all;
+%     disp('----- TASK 2 -----')
+%     disp('Draw a bounding box around each vehicle with an ID counter.')
+%     
+%     figure(1); imshow(seq_highway{1}); title('Red box shows object region');
+%     drawnow;
+%     
+%     for index = 2 : length(seq_highway)
+%         frame = seq_highway{index};
+%         
+%         % We need to initialize this variables
+%         
+%         id = [1];
+%         x1 = [20 + frame];
+%         y1 = [20 + frame];
+%         x2 = [100 + frame];
+%         y2 = [100 + frame];
+%         
+%         % This function prints a red bounding box and an id
+%         
+%         print_bb_with_id( frame, id, x1, y1, x2, y2 )
+%         
+%         disp([num2str(index), '/', num2str(length(seq_highway))])
+%         
+%     end
+%     
+% end
 
 %% Task 3
 if(doTask3)

@@ -41,7 +41,7 @@
 % <matlab:helpview(fullfile(docroot,'toolbox','matlab','matlab_prog','matlab_prog.map'),'nested_functions') nested functions> 
 % below.
 
-function multiCarTracking()
+function multiCarTracking(video_file)
 
 % Create system objects used for reading video, detecting moving objects,
 % and displaying the results.
@@ -79,10 +79,13 @@ end
         % objects in each frame, and playing the video.
         
         % Create a video file reader.
-        obj.reader = vision.VideoFileReader('../highway.avi');
-        obj.foreground_reader = vision.VideoFileReader('../foreground_highway.avi');
-       % obj.reader = vision.VideoFileReader('../traffic.avi');
-        %obj.foreground_reader = vision.VideoFileReader('../foreground_traffic.avi');
+        if(strcmp(video_file,'highway'))
+            obj.reader = vision.VideoFileReader('highway.avi');
+            obj.foreground_reader = vision.VideoFileReader('foreground_highway.avi');
+        else
+            obj.reader = vision.VideoFileReader('traffic.avi');
+            obj.foreground_reader = vision.VideoFileReader('foreground_traffic.avi');
+        end
         
         % Create two video players, one to display the video,
         % and one to display the foreground mask.
@@ -95,9 +98,15 @@ end
         % (called 'blobs' or 'connected components'), and compute their
         % characteristics, such as area, centroid, and the bounding box.
         
-        obj.blobAnalyser = vision.BlobAnalysis('BoundingBoxOutputPort', true, ...
-            'AreaOutputPort', true, 'CentroidOutputPort', true, ...
-            'MinimumBlobArea', 180, 'Connectivity',4); %MinimumBlobArea Traffic: 400; Highway: 180
+        if(strcmp(video_file,'highway'))
+            obj.blobAnalyser = vision.BlobAnalysis('BoundingBoxOutputPort', true, ...
+                'AreaOutputPort', true, 'CentroidOutputPort', true, ...
+                'MinimumBlobArea', 180, 'Connectivity',4); %MinimumBlobArea Traffic: 400; Highway: 180
+        else
+            obj.blobAnalyser = vision.BlobAnalysis('BoundingBoxOutputPort', true, ...
+                'AreaOutputPort', true, 'CentroidOutputPort', true, ...
+                'MinimumBlobArea', 400, 'Connectivity',4); %MinimumBlobArea Traffic: 400; Highway: 180
+        end
     end
 
 %% Initialize Tracks
@@ -288,8 +297,8 @@ end
             return;
         end
         
-        invisibleForTooLong = 5; %Highway: 10 %Traffic: 5
-        ageThreshold = 3; %Highway: 8 %Traffic: 3
+        invisibleForTooLong = 5; %Highway: 5 %Traffic: 5
+        ageThreshold = 3; %Highway: 3 %Traffic: 3
         
         % Compute the fraction of the track's age for which it was visible.
         ages = [tracks(:).age];

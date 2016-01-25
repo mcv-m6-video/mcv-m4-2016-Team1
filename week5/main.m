@@ -54,7 +54,7 @@ if(doTask2)
     disp('----- TASK 2 -----')
     disp('Draw a bounding box around each vehicle with an ID counter.')
     
-    disp('We did that task embeded in every single task that requires it. (task1, task4 & task5)')
+    disp('We did that task embedded in every single task that requires it. (task1, task4 & task5)')
     
 end
 
@@ -79,7 +79,11 @@ if(doTask4)
     disp('https://saravananthirumuruganathan.wordpress.com/2010/04/01/introduction-to-mean-shift-algorithm/')
     disp('http://areshmatlab.blogspot.com.es/2010/06/meanshift-tracking-algorithm.html')
     
-    matlab_mean_shift(seq_highway)
+    %matlab_mean_shift(seq_highway)
+    
+    %filename = 'highway';
+    
+    matlab_mean_shift_avi()
     
 end
 

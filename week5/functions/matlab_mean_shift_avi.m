@@ -330,13 +330,21 @@ function matlab_mean_shift_avi( )
             % Noisy detections tend to result in short-lived tracks.
             % Only display tracks that have been visible for more than 
             % a minimum number of frames.
-            reliableTrackInds = ...
+            reliableTrackIndsForVisivility = ...
                 [tracks(:).totalVisibleCount] > minVisibleCount;
+            
+            reliableTrackIndsForScore = [tracks(:).score] > 0.5;
+            
+            reliableTrackInds = reliableTrackIndsForVisivility .* reliableTrackIndsForScore;
+            
+            reliableTrackInds = find(reliableTrackInds == 1);
+            
             reliableTracks = tracks(reliableTrackInds);
             
             % Display the objects. If an object has not been detected
             % in this frame, display its predicted bounding box.
-            if ~isempty(reliableTracks)
+            if ~isempty(reliableTrackIndsForVisivility)
+            %if ~isempty(reliableTracks)
                 % Get bounding boxes.
                 bboxes = cat(1, reliableTracks.bbox);
                 

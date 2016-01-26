@@ -12,6 +12,13 @@ function params = load_parameters()
     
     %% Task 2
     params.tau = 3;
+    
+    %% Task 3
+    % equation of lines: y = a*x + b
+    params.a0=0;
+    params.b0=240-100;
+    params.a1=0;
+    params.b1=240;
 
     
     %% Task 5

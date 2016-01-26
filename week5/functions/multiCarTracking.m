@@ -354,6 +354,7 @@ end
 % displays the frame and the mask in their respective video players. 
 
     function displayTrackingResults()
+        global params;
         % Convert the frame and the mask to uint8 RGB.
         frame = im2uint8(frame);
         
@@ -394,6 +395,21 @@ end
                 mask = insertObjectAnnotation(mask, 'rectangle', ...
                     bboxes, labels);
             end
+        end
+        if(strcmp(video_file,'highway'))
+            line0_x = linspace(1,size(frame,2),1000);  %# x values at a higher resolution
+            line0_y = params.b0 + params.a0*line0_x;                  %# corresponding y values
+            
+            line1_x = linspace(1,size(frame,2),1000);  %# x values at a higher resolution
+            line1_y = params.b1 + params.a1*line0_x;                   %# corresponding y values
+            
+            index_line0 = false(size(frame));
+            index_line0(round(line0_y),round(line0_x),2) = true;
+            index_line1 = false(size(frame));
+            index_line1(round(line1_y),round(line1_x),2) = true;
+            
+            frame(index_line0) = 255; %reshape([0,255,0],[1,1,3]);  %# Set the values to the max value of 255 for uint8
+            frame(index_line1) = 255; %reshape([0,255,0],[1,1,3]);
         end
         
         % Display the mask and the frame.

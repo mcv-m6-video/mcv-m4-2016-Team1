@@ -47,7 +47,7 @@ function multiCarTracking(video_file)
 % and displaying the results.
 obj = setupSystemObjects();
 
-tracks = initializeTracks(); % Create an empty array of tracks.
+[tracks, speed_tracks] = initializeTracks(); % Create an empty array of tracks.
 
 nextId = 1; % ID of the next track
 
@@ -64,35 +64,12 @@ while ~isDone(obj.reader) && ~isDone(obj.foreground_reader)
     updateUnassignedTracks();
     deleteLostTracks();
     createNewTracks();
+    updateSpeeds();
     
-    [speed_computation_status, frame_count] = speed_update_frame_count();
+%     [speed_computation_status, frame_count] = speed_update_frame_count();
     
     displayTrackingResults();
 end
-
-    function [speed_computation_status, frame_count] = speed_update_frame_count()
-        global params;
-        speed_computation_status=zeros(length(tracks),1);
-        frame_count = zeros(length(tracks),1,'uint16');
-        for i=1:length(tracks)
-           bbox = tracks(i).bbox;
-           x = bbox(1); y = bbox(2); w = bbox(3); h = bbox(4);
-           centroid = [(x+(x+w))/2, (y+(y+h))/2];
-           c_x = centroid(1); c_y = centroid(2);
-           
-           if c_y<params.b0
-               speed_computation_status(i) = 0;
-           elseif c_y>=params.b0 && c_y<params.b1
-               speed_computation_status(i) = 1;
-           elseif c_y>=params.b1
-               speed_computation_status(i) = 2;
-           end
-           
-           if c_y>=params.b0 && c_y<=params.b1
-               frame_count(i) = frame_count(i) + 1;
-           end
-        end
-    end
 
 %% Create System Objects
 % Create System objects used for reading the video frames, detecting
@@ -167,7 +144,7 @@ end
 % it was tracked for a short time, and marked invisible for most of the of
 % the frames.
 
-    function tracks = initializeTracks()
+    function [tracks, speed_tracks] = initializeTracks()
         % create an empty array of tracks
         tracks = struct(...
             'id', {}, ...
@@ -176,6 +153,11 @@ end
             'age', {}, ...
             'totalVisibleCount', {}, ...
             'consecutiveInvisibleCount', {});
+        speed_tracks = struct(...
+            'status', {}, ...
+            'centroid', {}, ...
+            'frame_count', {}, ...
+            'speed', {});
     end
 
 
@@ -276,6 +258,7 @@ end
 
     function updateAssignedTracks()
         numAssignedTracks = size(assignments, 1);
+        global params;
         for i = 1:numAssignedTracks
             trackIdx = assignments(i, 1);
             detectionIdx = assignments(i, 2);
@@ -289,6 +272,26 @@ end
             % Replace predicted bounding box with detected
             % bounding box.
             tracks(trackIdx).bbox = bbox;
+            
+            % Speed trackers
+            x = bbox(1); y = bbox(2); w = bbox(3); h = bbox(4);
+            c_x = (x+(x+w))/2; c_y = (y+(y+h))/2;
+            speed_tracks(trackIdx).centroid = [c_x, c_y];
+            
+            if(strcmp(video_file,'highway'))
+                if c_y<params.b0
+                    speed_tracks(trackIdx).status = 0;
+                elseif c_y>=params.b0 && c_y<params.b1
+                    speed_tracks(trackIdx).status = 1;
+                elseif c_y>=params.b1
+                    speed_tracks(trackIdx).status = 2;
+                end
+                
+                if c_y>=params.b0 && c_y<=params.b1
+                    speed_tracks(trackIdx).frame_count = speed_tracks(trackIdx).frame_count + 1;
+                end
+            end
+            
             
             % Update track's age.
             tracks(trackIdx).age = tracks(trackIdx).age + 1;
@@ -309,6 +312,7 @@ end
             tracks(ind).age = tracks(ind).age + 1;
             tracks(ind).consecutiveInvisibleCount = ...
                 tracks(ind).consecutiveInvisibleCount + 1;
+            speed_tracks(ind).frame_count = speed_tracks(ind).frame_count + 1;
         end
     end
 
@@ -336,6 +340,7 @@ end
         
         % Delete lost tracks.
         tracks = tracks(~lostInds);
+        speed_tracks = speed_tracks(~lostInds);
     end
 
 %% Create New Tracks
@@ -365,11 +370,32 @@ end
                 'totalVisibleCount', 1, ...
                 'consecutiveInvisibleCount', 0);
             
+            % Speed trackers
+            x = bbox(1); y = bbox(2); w = bbox(3); h = bbox(4);
+            c_x = (x+(x+w))/2; c_y = (y+(y+h))/2;
+            
+            new_speed_track = struct(...
+                'status', 0, ...
+                'centroid', [c_x, c_y], ...
+                'frame_count', 1, ...
+                'speed', -1);
+            
+            
             % Add it to the array of tracks.
             tracks(end + 1) = newTrack;
+            speed_tracks(end+1) = new_speed_track;
             
             % Increment the next id.
             nextId = nextId + 1;
+        end
+    end
+
+    function updateSpeeds()
+        global params;
+        for i=1:length(speed_tracks)
+            if speed_tracks(i).status==2 && speed_tracks(i).speed==-1
+                speed_tracks(i).speed = double(params.pixXframe2kmXh*double(params.b1-params.b0)/double(speed_tracks(i).frame_count));
+            end
         end
     end
 
@@ -392,6 +418,7 @@ end
             reliableTrackInds = ...
                 [tracks(:).totalVisibleCount] > minVisibleCount;
             reliableTracks = tracks(reliableTrackInds);
+            reliableSpeedTracks = speed_tracks(reliableTrackInds);
             
             % Display the objects. If an object has not been detected
             % in this frame, display its predicted bounding box.
@@ -401,11 +428,16 @@ end
                 
                 % Get ids.
                 ids = int32([reliableTracks(:).id]);
+                speeds = [reliableSpeedTracks(:).speed];
+                labels = cell(1,length(ids));
+                for i=1:length(ids)
+                    labels{i} = [int2str(ids(i)), '     ', num2str(speeds(i),2), ' pix/frame'];
+                end
                 
                 % Create labels for objects indicating the ones for
                 % which we display the predicted rather than the actual
                 % location.
-                labels = cellstr(int2str(ids'));
+%                 labels = cellstr(int2str(ids'));
                 predictedTrackInds = ...
                     [reliableTracks(:).consecutiveInvisibleCount] > 0;
                 isPredicted = cell(size(labels));

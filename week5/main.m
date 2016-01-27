@@ -123,23 +123,22 @@ if(doTask5)
     
     disp('Apply the background substraction work previously done.')
     
-    seq_20kmh = storeAviFramesInSeq('20kmh_cam');
-    %seq_30kmh = storeAviFramesInSeq('30kmh_cam');
-    %seq_40kmh = storeAviFramesInSeq('40kmh_cam');
-    %seq_50kmh = storeAviFramesInSeq('50kmh_cam');
-    
-    params.alpha = 1;
-    params.P = 45;
-    
-    foreEstim_20kmh = backgroundSubstraction(seq_20kmh,params.alpha, params.P, show_videos, color_space);
-    %foreEstim_30kmh = backgroundSubstraction('30kmh_cam',params.alpha, params.P, show_videos, color_space);
-    %foreEstim_40kmh = backgroundSubstraction('40kmh_cam',params.alpha, params.P, show_videos, color_space);
-    %foreEstim_50kmh = backgroundSubstraction('50kmh_cam',params.alpha, params.P, show_videos, color_space);
-    
-    save_sequence(foreEstim_20kmh,'foreground_20kmh', 10);
-    %save_sequence(foreEstim_30kmh,'foreground_30kmh', 5);
-    %save_sequence(foreEstim_40kmh,'foreground_40kmh', 5);
-    %save_sequence(foreEstim_50kmh,'foreground_50kmh', 5);
+%     seq_20kmh = storeAviFramesInSeq('20kmh_cam');
+%     seq_30kmh = storeAviFramesInSeq('30kmh_cam');
+%     seq_40kmh = storeAviFramesInSeq('40kmh_cam');
+%     seq_50kmh = storeAviFramesInSeq('50kmh_cam');
+%     
+%     params.alpha = 0.2;
+%     
+%     foreEstim_20kmh = backgroundSubstraction(seq_20kmh, params.alpha, params.P, show_videos, color_space);
+%     foreEstim_30kmh = backgroundSubstraction(seq_30kmh, params.alpha, params.P, show_videos, color_space);
+%     foreEstim_40kmh = backgroundSubstraction(seq_40kmh, params.alpha, params.P, show_videos, color_space);
+%     foreEstim_50kmh = backgroundSubstraction(seq_50kmh, params.alpha, params.P, show_videos, color_space);
+%     
+%     save_sequence(foreEstim_20kmh,'foreground_20kmh', 5);
+%     save_sequence(foreEstim_30kmh,'foreground_30kmh', 5);
+%     save_sequence(foreEstim_40kmh,'foreground_40kmh', 5);
+%     save_sequence(foreEstim_50kmh,'foreground_50kmh', 5);
     
     multiCarTrackingOwnVideos('20kmh');
     

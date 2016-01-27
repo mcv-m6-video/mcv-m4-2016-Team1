@@ -1,4 +1,4 @@
-function [foreEstim, seq_starting_test, seq_mean] = backgroundSubstraction(seq,alpha, P, show_videos, color_space)
+function [foreEstim, seq_starting_test, seq_mean] = backgroundSubstraction(seq, alpha, P, show_videos, color_space)
 global params;
 
 % total elements in the sequence for training
@@ -66,7 +66,7 @@ for f = seq_starting_test : seq_length
         
         if show_videos
             subplot(2,2,1)
-            imshow(foreEstim_base{f-seq_starting_test+1})
+            imshow(foreEstim_base{f-seq_starting_test+1});
             subplot(2,2,2)
             if(strcmp(color_space,'HSV'))
                 input_to_show = hsv2rgb(double(seq{f})/255);
@@ -80,9 +80,11 @@ for f = seq_starting_test : seq_length
             subplot(2,2,3)
             %imshow(uint8(seq_mean_to_show))
             imshow(foreEstim_open{f-seq_starting_test+1})
+            title('Openning')
             subplot(2,2,4)
 %             imshow(uint8(seq_std_to_show))
             imshow(foreEstim_open_close{f-seq_starting_test+1})
+            title('Openning & Clossing')
             pause(0.001);
         end
         

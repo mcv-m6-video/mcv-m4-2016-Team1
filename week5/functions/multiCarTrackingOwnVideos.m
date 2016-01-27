@@ -55,6 +55,7 @@ nextId = 1; % ID of the next track
 while ~isDone(obj.reader) && ~isDone(obj.foreground_reader)
     frame = obj.reader.step();
     mask = obj.foreground_reader.step();
+    %car_velocity = obj.car_velocity.step();
     [centroids, bboxes] = detectObjects(mask);
     predictNewLocationsOfTracks();
     [assignments, unassignedTracks, unassignedDetections] = ...
@@ -84,26 +85,26 @@ end
         if (strcmp(video_file,'20kmh'))
             obj.reader = vision.VideoFileReader('videos/20kmh_cam.mp4');
             obj.foreground_reader = vision.VideoFileReader('foreground_20kmh.avi');
-            obj.car = vision.VideoFileReader('videos/20kmh_car.mp4');
+            %obj.car_velocity = vision.VideoFileReader('videos/20kmh_car.mp4');
         elseif (strcmp(video_file,'30kmh'))
             obj.reader = vision.VideoFileReader('videos/30kmh_cam.mp4');
             obj.foreground_reader = vision.VideoFileReader('foreground_30kmh.avi');
-            obj.car = vision.VideoFileReader('videos/30kmh_car.avi');
+            %obj.car_velocity = vision.VideoFileReader('videos/30kmh_car.mp4');
         elseif (strcmp(video_file,'40kmh'))
             obj.reader = vision.VideoFileReader('videos/40kmh_cam.mp4');
             obj.foreground_reader = vision.VideoFileReader('foreground_40kmh.avi');
-            obj.car = vision.VideoFileReader('videos/40kmh_car.avi');
+            %obj.car_velocity = vision.VideoFileReader('videos/40kmh_car.mp4');
         elseif (strcmp(video_file,'50kmh'))
             obj.reader = vision.VideoFileReader('videos/50kmh_cam.mp4');
             obj.foreground_reader = vision.VideoFileReader('foreground_50kmh.avi');
-            obj.car = vision.VideoFileReader('videos/50kmh_car.avi');
+            %obj.car_velocity = vision.VideoFileReader('videos/50kmh_car.mp4');
         end
         
         % Create two video players, one to display the video,
         % and one to display the foreground mask.
         obj.videoPlayer = vision.VideoPlayer('Position', [20, 400, 700, 400]);
         obj.maskPlayer = vision.VideoPlayer('Position', [740, 400, 700, 400]);
-        obj.car = vision.VideoPlayer('Position', [20, 800, 700, 400]);
+        %obj.car = vision.VideoPlayer('Position', [20, 800, 700, 400]);
         
         
         % Connected groups of foreground pixels are likely to correspond to moving

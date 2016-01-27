@@ -5,40 +5,40 @@
 % Copyright 2012 The MathWorks, Inc.
 
 %%
-% Detection of moving objects and motion-based tracking are important 
+% Detection of moving objects and motion-based tracking are important
 % components of many computer vision applications, including activity
 % recognition, traffic monitoring, and automotive safety.  The problem of
 % motion-based object tracking can be divided into two parts:
 %
-% # detecting moving objects in each frame 
+% # detecting moving objects in each frame
 % # associating the detections corresponding to the same object over time
 %
 % The detection of moving objects uses a background subtraction algorithm
 % based on Gaussian mixture models. Morphological operations are applied to
 % the resulting foreground mask to eliminate noise. Finally, blob analysis
 % detects groups of connected pixels, which are likely to correspond to
-% moving objects. 
+% moving objects.
 %
 % The association of detections to the same object is based solely on
 % motion. The motion of each track is estimated by a Kalman filter. The
 % filter is used to predict the track's location in each frame, and
-% determine the likelihood of each detection being assigned to each 
+% determine the likelihood of each detection being assigned to each
 % track.
 %
 % Track maintenance becomes an important aspect of this example. In any
 % given frame, some detections may be assigned to tracks, while other
 % detections and tracks may remain unassigned.The assigned tracks are
-% updated using the corresponding detections. The unassigned tracks are 
-% marked invisible. An unassigned detection begins a new track. 
+% updated using the corresponding detections. The unassigned tracks are
+% marked invisible. An unassigned detection begins a new track.
 %
 % Each track keeps count of the number of consecutive frames, where it
 % remained unassigned. If the count exceeds a specified threshold, the
 % example assumes that the object left the field of view and it deletes the
-% track.  
+% track.
 %
-% This example is a function with the main body at the top and helper 
-% routines in the form of 
-% <matlab:helpview(fullfile(docroot,'toolbox','matlab','matlab_prog','matlab_prog.map'),'nested_functions') nested functions> 
+% This example is a function with the main body at the top and helper
+% routines in the form of
+% <matlab:helpview(fullfile(docroot,'toolbox','matlab','matlab_prog','matlab_prog.map'),'nested_functions') nested functions>
 % below.
 
 function multiCarTracking(video_file)
@@ -65,9 +65,34 @@ while ~isDone(obj.reader) && ~isDone(obj.foreground_reader)
     deleteLostTracks();
     createNewTracks();
     
+    [speed_computation_status, frame_count] = speed_update_frame_count();
+    
     displayTrackingResults();
 end
 
+    function [speed_computation_status, frame_count] = speed_update_frame_count()
+        global params;
+        speed_computation_status=zeros(length(tracks),1);
+        frame_count = zeros(length(tracks),1,'uint16');
+        for i=1:length(tracks)
+           bbox = tracks(i).bbox;
+           x = bbox(1); y = bbox(2); w = bbox(3); h = bbox(4);
+           centroid = [(x+(x+w))/2, (y+(y+h))/2];
+           c_x = centroid(1); c_y = centroid(2);
+           
+           if c_y<params.b0
+               speed_computation_status(i) = 0;
+           elseif c_y>=params.b0 && c_y<params.b1
+               speed_computation_status(i) = 1;
+           elseif c_y>=params.b1
+               speed_computation_status(i) = 2;
+           end
+           
+           if c_y>=params.b0 && c_y<=params.b1
+               frame_count(i) = frame_count(i) + 1;
+           end
+        end
+    end
 
 %% Create System Objects
 % Create System objects used for reading the video frames, detecting
@@ -92,7 +117,7 @@ end
         obj.videoPlayer = vision.VideoPlayer('Position', [20, 400, 700, 400]);
         obj.maskPlayer = vision.VideoPlayer('Position', [740, 400, 700, 400]);
         
-
+        
         % Connected groups of foreground pixels are likely to correspond to moving
         % objects.  The blob analysis system object is used to find such groups
         % (called 'blobs' or 'connected components'), and compute their
@@ -114,7 +139,7 @@ end
 % track is a structure representing a moving object in the video. The
 % purpose of the structure is to maintain the state of a tracked object.
 % The state consists of information used for detection to track assignment,
-% track termination, and display. 
+% track termination, and display.
 %
 % The structure contains the following fields:
 %
@@ -127,20 +152,20 @@ end
 %                           detected
 % * |totalVisibleCount| :   the total number of frames in which the track
 %                           was detected (visible)
-% * |consecutiveInvisibleCount| : the number of consecutive frames for 
+% * |consecutiveInvisibleCount| : the number of consecutive frames for
 %                                  which the track was not detected (invisible).
 %
 % Noisy detections tend to result in short-lived tracks. For this reason,
 % the example only displays an object after it was tracked for some number
-% of frames. This happens when |totalVisibleCount| exceeds a specified 
-% threshold.    
+% of frames. This happens when |totalVisibleCount| exceeds a specified
+% threshold.
 %
 % When no detections are associated with a track for several consecutive
-% frames, the example assumes that the object has left the field of view 
+% frames, the example assumes that the object has left the field of view
 % and deletes the track. This happens when |consecutiveInvisibleCount|
-% exceeds a specified threshold. A track may also get deleted as noise if 
-% it was tracked for a short time, and marked invisible for most of the of 
-% the frames.        
+% exceeds a specified threshold. A track may also get deleted as noise if
+% it was tracked for a short time, and marked invisible for most of the of
+% the frames.
 
     function tracks = initializeTracks()
         % create an empty array of tracks
@@ -156,13 +181,13 @@ end
 
 %% Detect Objects
 % The |detectObjects| function returns the centroids and the bounding boxes
-% of the detected objects. It also returns the binary mask, which has the 
+% of the detected objects. It also returns the binary mask, which has the
 % same size as the input frame. Pixels with a value of 1 correspond to the
-% foreground, and pixels with a value of 0 correspond to the background.   
+% foreground, and pixels with a value of 0 correspond to the background.
 %
-% The function performs motion segmentation using the foreground detector. 
+% The function performs motion segmentation using the foreground detector.
 % It then performs morphological operations on the resulting binary mask to
-% remove noisy pixels and to fill the holes in the remaining blobs.  
+% remove noisy pixels and to fill the holes in the remaining blobs.
 
     function [centroids, bboxes] = detectObjects(mask_frame)
         
@@ -185,7 +210,7 @@ end
             % Predict the current location of the track.
             predictedCentroid = predict(tracks(i).kalmanFilter);
             
-            % Shift the bounding box so that its center is at 
+            % Shift the bounding box so that its center is at
             % the predicted location.
             predictedCentroid = int32(predictedCentroid) - bbox(3:4) / 2;
             tracks(i).bbox = [predictedCentroid, bbox(3:4)];
@@ -195,34 +220,34 @@ end
 %% Assign Detections to Tracks
 % Assigning object detections in the current frame to existing tracks is
 % done by minimizing cost. The cost is defined as the negative
-% log-likelihood of a detection corresponding to a track.  
+% log-likelihood of a detection corresponding to a track.
 %
-% The algorithm involves two steps: 
+% The algorithm involves two steps:
 %
 % Step 1: Compute the cost of assigning every detection to each track using
-% the |distance| method of the |vision.KalmanFilter| System object. The 
+% the |distance| method of the |vision.KalmanFilter| System object. The
 % cost takes into account the Euclidean distance between the predicted
 % centroid of the track and the centroid of the detection. It also includes
 % the confidence of the prediction, which is maintained by the Kalman
 % filter. The results are stored in an MxN matrix, where M is the number of
-% tracks, and N is the number of detections.   
+% tracks, and N is the number of detections.
 %
 % Step 2: Solve the assignment problem represented by the cost matrix using
-% the |assignDetectionsToTracks| function. The function takes the cost 
-% matrix and the cost of not assigning any detections to a track.  
+% the |assignDetectionsToTracks| function. The function takes the cost
+% matrix and the cost of not assigning any detections to a track.
 %
 % The value for the cost of not assigning a detection to a track depends on
-% the range of values returned by the |distance| method of the 
-% |vision.KalmanFilter|. This value must be tuned experimentally. Setting 
+% the range of values returned by the |distance| method of the
+% |vision.KalmanFilter|. This value must be tuned experimentally. Setting
 % it too low increases the likelihood of creating a new track, and may
-% result in track fragmentation. Setting it too high may result in a single 
-% track corresponding to a series of separate moving objects.   
+% result in track fragmentation. Setting it too high may result in a single
+% track corresponding to a series of separate moving objects.
 %
 % The |assignDetectionsToTracks| function uses the Munkres' version of the
 % Hungarian algorithm to compute an assignment which minimizes the total
 % cost. It returns an M x 2 matrix containing the corresponding indices of
 % assigned tracks and detections in its two columns. It also returns the
-% indices of tracks and detections that remained unassigned. 
+% indices of tracks and detections that remained unassigned.
 
     function [assignments, unassignedTracks, unassignedDetections] = ...
             detectionToTrackAssignment()
@@ -247,7 +272,7 @@ end
 % corresponding detection. It calls the |correct| method of
 % |vision.KalmanFilter| to correct the location estimate. Next, it stores
 % the new bounding box, and increases the age of the track and the total
-% visible count by 1. Finally, the function sets the invisible count to 0. 
+% visible count by 1. Finally, the function sets the invisible count to 0.
 
     function updateAssignedTracks()
         numAssignedTracks = size(assignments, 1);
@@ -290,7 +315,7 @@ end
 %% Delete Lost Tracks
 % The |deleteLostTracks| function deletes tracks that have been invisible
 % for too many consecutive frames. It also deletes recently created tracks
-% that have been invisible for too many frames overall. 
+% that have been invisible for too many frames overall.
 
     function deleteLostTracks()
         if isempty(tracks)
@@ -349,9 +374,9 @@ end
     end
 
 %% Display Tracking Results
-% The |displayTrackingResults| function draws a bounding box and label ID 
-% for each track on the video frame and the foreground mask. It then 
-% displays the frame and the mask in their respective video players. 
+% The |displayTrackingResults| function draws a bounding box and label ID
+% for each track on the video frame and the foreground mask. It then
+% displays the frame and the mask in their respective video players.
 
     function displayTrackingResults()
         global params;
@@ -360,9 +385,9 @@ end
         
         minVisibleCount = 8;
         if ~isempty(tracks)
-              
+            
             % Noisy detections tend to result in short-lived tracks.
-            % Only display tracks that have been visible for more than 
+            % Only display tracks that have been visible for more than
             % a minimum number of frames.
             reliableTrackInds = ...
                 [tracks(:).totalVisibleCount] > minVisibleCount;
@@ -377,8 +402,8 @@ end
                 % Get ids.
                 ids = int32([reliableTracks(:).id]);
                 
-                % Create labels for objects indicating the ones for 
-                % which we display the predicted rather than the actual 
+                % Create labels for objects indicating the ones for
+                % which we display the predicted rather than the actual
                 % location.
                 labels = cellstr(int2str(ids'));
                 predictedTrackInds = ...
@@ -413,7 +438,7 @@ end
         end
         
         % Display the mask and the frame.
-        obj.maskPlayer.step(mask);        
+        obj.maskPlayer.step(mask);
         obj.videoPlayer.step(frame);
         pause(0.03)
     end
@@ -422,18 +447,18 @@ end
 % This example created a motion-based system for detecting and
 % tracking multiple moving objects. Try using a different video to see if
 % you are able to detect and track objects. Try modifying the parameters
-% for the detection, assignment, and deletion steps.  
+% for the detection, assignment, and deletion steps.
 %
 % The tracking in this example was solely based on motion with the
 % assumption that all objects move in a straight line with constant speed.
 % When the motion of an object significantly deviates from this model, the
 % example may produce tracking errors. Notice the mistake in tracking the
-% person labeled #12, when he is occluded by the tree. 
+% person labeled #12, when he is occluded by the tree.
 %
 % The likelihood of tracking errors can be reduced by using a more complex
 % motion model, such as constant acceleration, or by using multiple Kalman
 % filters for every object. Also, you can incorporate other cues for
-% associating detections over time, such as size, shape, and color. 
+% associating detections over time, such as size, shape, and color.
 
 displayEndOfDemoMessage(mfilename)
 end

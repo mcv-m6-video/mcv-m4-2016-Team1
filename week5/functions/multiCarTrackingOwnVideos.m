@@ -84,7 +84,7 @@ end
         if (strcmp(video_file,'20kmh'))
             obj.reader = vision.VideoFileReader('videos/20kmh_cam.mp4');
             obj.foreground_reader = vision.VideoFileReader('foreground_20kmh.avi');
-            obj.car = vision.VideoFileReader('videos/20kmh_car.avi');
+            obj.car = vision.VideoFileReader('videos/20kmh_car.mp4');
         elseif (strcmp(video_file,'30kmh'))
             obj.reader = vision.VideoFileReader('videos/30kmh_cam.mp4');
             obj.foreground_reader = vision.VideoFileReader('foreground_30kmh.avi');
@@ -309,8 +309,11 @@ end
                 
                 if c_y >= params.b0 && c_y <= params.b1
                     speed_tracks(trackIdx).frame_count = speed_tracks(trackIdx).frame_count + 1;
-                end
+                end            
+            elseif(strcmp(video_file,'traffic'))
+                if c_x
             end
+                
             
             
             % Update track's age.

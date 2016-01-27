@@ -8,11 +8,11 @@ fprintf('Loading general parameters...\n');
 
 color_space = 'RGB'; % 'RGB', 'Gray', 'HSV', 'YUV'
 
-doTask1 = false;
+doTask1 = true;
 doTask2 = false;
 doTask3 = false;
 doTask4 = false;
-doTask5 = true;
+doTask5 = false;
 
 show_plots = false;
 show_seq = true;
@@ -141,6 +141,6 @@ if(doTask5)
     %save_sequence(foreEstim_40kmh,'foreground_40kmh', 5);
     %save_sequence(foreEstim_50kmh,'foreground_50kmh', 5);
     
-    %multiCarTrackingOwnVideos('20kmh');
+    multiCarTrackingOwnVideos('20kmh');
     
 end

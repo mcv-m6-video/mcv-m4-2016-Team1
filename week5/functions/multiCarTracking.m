@@ -290,6 +290,17 @@ end
                 if c_y>=params.b0 && c_y<=params.b1
                     speed_tracks(trackIdx).frame_count = speed_tracks(trackIdx).frame_count + 1;
                 end
+            elseif(strcmp(video_file,'traffic'))
+                if c_x<=size(frame,2) && c_y<=size(frame,1) && ~(x<=1 || y<=1)
+                    speed_tracks(trackIdx).status = 1;
+                elseif x<=1 || y<=1
+                    speed_tracks(trackIdx).status = 2;
+                else
+                    speed_tracks(trackIdx).status = 0;
+                end
+                if speed_tracks(trackIdx).status == 1;
+                    speed_tracks(trackIdx).frame_count = speed_tracks(trackIdx).frame_count + 1;
+                end
             end
             
             
@@ -395,6 +406,7 @@ end
         for i=1:length(speed_tracks)
             if speed_tracks(i).status==2 && speed_tracks(i).speed==-1
                 speed_tracks(i).speed = double(params.pixXframe2kmXh*double(params.b1-params.b0)/double(speed_tracks(i).frame_count));
+                disp(['New speed approximation: ', num2str(params.pixXframe2kmXh*speed_tracks(i).speed), ' pix/frame']);
             end
         end
     end
@@ -438,11 +450,11 @@ end
                 % which we display the predicted rather than the actual
                 % location.
 %                 labels = cellstr(int2str(ids'));
-                predictedTrackInds = ...
-                    [reliableTracks(:).consecutiveInvisibleCount] > 0;
-                isPredicted = cell(size(labels));
-                isPredicted(predictedTrackInds) = {' predicted'};
-                labels = strcat(labels, isPredicted);
+%                 predictedTrackInds = ...
+%                     [reliableTracks(:).consecutiveInvisibleCount] > 0;
+%                 isPredicted = cell(size(labels));
+%                 isPredicted(predictedTrackInds) = {' predicted'};
+%                 labels = strcat(labels, isPredicted);
                 
                 % Draw the objects on the frame.
                 frame = insertObjectAnnotation(frame, 'rectangle', ...

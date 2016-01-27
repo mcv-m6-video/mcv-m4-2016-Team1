@@ -1,4 +1,4 @@
-function matlab_mean_shift_avi( )
+function matlab_mean_shift_avi( seq_name )
 %UNTITLED3 Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -37,8 +37,8 @@ function matlab_mean_shift_avi( )
         % objects in each frame, and playing the video.
         
         % Create a video file reader.
-        obj.reader = vision.VideoFileReader('./highway.avi');
-        obj.foreground_reader = vision.VideoFileReader('./foreground_highway.avi');
+        obj.reader = vision.VideoFileReader(['./', seq_name, '.avi']);
+        obj.foreground_reader = vision.VideoFileReader(['./foreground_', seq_name, '.avi']);
        % obj.reader = vision.VideoFileReader('../traffic.avi');
         %obj.foreground_reader = vision.VideoFileReader('../foreground_traffic.avi');
         
@@ -53,9 +53,17 @@ function matlab_mean_shift_avi( )
         % (called 'blobs' or 'connected components'), and compute their
         % characteristics, such as area, centroid, and the bounding box.
         
-        obj.blobAnalyser = vision.BlobAnalysis('BoundingBoxOutputPort', true, ...
+        if strcmp(seq_name, 'highway')
+        
+            obj.blobAnalyser = vision.BlobAnalysis('BoundingBoxOutputPort', true, ...
             'AreaOutputPort', true, 'CentroidOutputPort', true, ...
             'MinimumBlobArea', 180, 'Connectivity',4); %MinimumBlobArea Traffic: 400; Highway: 180
+        
+        elseif strcmp(seq_name, 'traffic')
+            obj.blobAnalyser = vision.BlobAnalysis('BoundingBoxOutputPort', true, ...
+            'AreaOutputPort', true, 'CentroidOutputPort', true, ...
+            'MinimumBlobArea', 400, 'Connectivity',4); %MinimumBlobArea Traffic: 400; Highway: 180
+        end
     end
     
     %% Initialize Tracks
@@ -256,8 +264,8 @@ function matlab_mean_shift_avi( )
             return;
         end
         
-        invisibleForTooLong = 5; %Highway: 10 %Traffic: 5
-        ageThreshold = 3; %Highway: 8 %Traffic: 3
+        invisibleForTooLong = 5;
+        ageThreshold = 3;
         
         % Compute the fraction of the track's age for which it was visible.
         ages = [tracks(:).age];

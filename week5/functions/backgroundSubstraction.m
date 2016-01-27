@@ -1,7 +1,5 @@
 function [foreEstim, seq_starting_test, seq_mean] = backgroundSubstraction(seq,alpha, P, show_videos, color_space)
 global params;
-% parameters
-% alpha = 1;
 
 % total elements in the sequence for training
 seq_length = length(seq);

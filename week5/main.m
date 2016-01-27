@@ -8,11 +8,11 @@ fprintf('Loading general parameters...\n');
 
 color_space = 'RGB'; % 'RGB', 'Gray', 'HSV', 'YUV'
 
-doTask1 = true;
+doTask1 = false;
 doTask2 = false;
 doTask3 = false;
 doTask4 = false;
-doTask5 = false;
+doTask5 = true;
 
 show_plots = false;
 show_seq = true;
@@ -105,21 +105,42 @@ if(doTask4)
     disp('https://saravananthirumuruganathan.wordpress.com/2010/04/01/introduction-to-mean-shift-algorithm/')
     disp('http://areshmatlab.blogspot.com.es/2010/06/meanshift-tracking-algorithm.html')
     
-    %matlab_mean_shift(seq_highway)
-    
-    %filename = 'highway';
-    
-    matlab_mean_shift_avi()
+    matlab_mean_shift_avi('highway')
+    disp('Press any key to continue with the traffic sequence')
+    pause;
+    matlab_mean_shift_avi('traffic');
     
 end
 
 %% Task 5
 if(doTask5)
     disp('press any key to execute task 5')
-    pause;
+    %pause;
     close all;
     disp('----- TASK 5 -----')
     disp('Record a video sequence with traffic monitoring.')
     disp('(optional) Generate a simple speed ground truth with in-vehicle recording of the speed meter.')
+    
+    disp('Apply the background substraction work previously done.')
+    
+    seq_20kmh = storeAviFramesInSeq('20kmh_cam');
+    %seq_30kmh = storeAviFramesInSeq('30kmh_cam');
+    %seq_40kmh = storeAviFramesInSeq('40kmh_cam');
+    %seq_50kmh = storeAviFramesInSeq('50kmh_cam');
+    
+    params.alpha = 1;
+    params.P = 45;
+    
+    foreEstim_20kmh = backgroundSubstraction(seq_20kmh,params.alpha, params.P, show_videos, color_space);
+    %foreEstim_30kmh = backgroundSubstraction('30kmh_cam',params.alpha, params.P, show_videos, color_space);
+    %foreEstim_40kmh = backgroundSubstraction('40kmh_cam',params.alpha, params.P, show_videos, color_space);
+    %foreEstim_50kmh = backgroundSubstraction('50kmh_cam',params.alpha, params.P, show_videos, color_space);
+    
+    save_sequence(foreEstim_20kmh,'foreground_20kmh', 10);
+    %save_sequence(foreEstim_30kmh,'foreground_30kmh', 5);
+    %save_sequence(foreEstim_40kmh,'foreground_40kmh', 5);
+    %save_sequence(foreEstim_50kmh,'foreground_50kmh', 5);
+    
+    %multiCarTrackingOwnVideos('20kmh');
     
 end

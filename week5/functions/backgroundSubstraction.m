@@ -1,7 +1,5 @@
-function [foreEstim, seq_starting_test, seq_mean] = backgroundSubstraction(seq,alpha, P, show_videos, color_space)
+function [foreEstim, seq_starting_test, seq_mean] = backgroundSubstraction(seq, alpha, P, conn, open, close, show_videos, color_space)
 global params;
-% parameters
-% alpha = 1;
 
 % total elements in the sequence for training
 seq_length = length(seq);
@@ -50,25 +48,25 @@ for f = seq_starting_test : seq_length
         if params.fill_conn==0
             foreEstim{f-seq_starting_test+1} = estimation;
         else
-            foreEstim{f-seq_starting_test+1} = imfill(estimation,params.fill_conn,'holes');
+            foreEstim{f-seq_starting_test+1} = imfill(estimation,conn,'holes');
             if P ~= 0
                 foreEstim{f-seq_starting_test+1} = bwareaopen(foreEstim{f-seq_starting_test+1},P);
             end
             if params.closing ~= 0
-                SE_close = ones(params.closing);
-                SE_open = ones(params.opening);
+                SE_close = ones(close);
+                SE_open = ones(open);
                 foreEstim_base = foreEstim;
                 foreEstim_open{f-seq_starting_test+1}       = imopen(foreEstim{f-seq_starting_test+1}, SE_open);
                 foreEstim_open_close{f-seq_starting_test+1} = imclose(foreEstim_open{f-seq_starting_test+1}, SE_close);
                 foreEstim{f-seq_starting_test+1} = foreEstim_open_close{f-seq_starting_test+1};
             end
-            foreEstim{f-seq_starting_test+1} = imfill(foreEstim{f-seq_starting_test+1},params.fill_conn,'holes');
+            foreEstim{f-seq_starting_test+1} = imfill(foreEstim{f-seq_starting_test+1},conn,'holes');
             foreEstim{f-seq_starting_test+1} = imerode(foreEstim{f-seq_starting_test+1},strel('diamond',3));
         end
         
         if show_videos
             subplot(2,2,1)
-            imshow(foreEstim_base{f-seq_starting_test+1})
+            imshow(foreEstim_base{f-seq_starting_test+1});
             subplot(2,2,2)
             if(strcmp(color_space,'HSV'))
                 input_to_show = hsv2rgb(double(seq{f})/255);
@@ -82,9 +80,11 @@ for f = seq_starting_test : seq_length
             subplot(2,2,3)
             %imshow(uint8(seq_mean_to_show))
             imshow(foreEstim_open{f-seq_starting_test+1})
+            title('Openning')
             subplot(2,2,4)
 %             imshow(uint8(seq_std_to_show))
             imshow(foreEstim_open_close{f-seq_starting_test+1})
+            title('Openning & Clossing')
             pause(0.001);
         end
         

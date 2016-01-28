@@ -157,6 +157,7 @@ end
             'status', {}, ...
             'centroid', {}, ...
             'frame_count', {}, ...
+            'displacement', {}, ...
             'speed', {});
     end
 
@@ -274,8 +275,9 @@ end
             tracks(trackIdx).bbox = bbox;
             
             % Speed trackers
-            x = bbox(1); y = bbox(2); w = bbox(3); h = bbox(4);
+            x = double(bbox(1)); y = double(bbox(2)); w = double(bbox(3)); h = double(bbox(4));
             c_x = (x+(x+w))/2; c_y = (y+(y+h))/2;
+            prev_centroid = speed_tracks(trackIdx).centroid;
             speed_tracks(trackIdx).centroid = [c_x, c_y];
             
             if(strcmp(video_file,'highway'))
@@ -289,6 +291,7 @@ end
                 
                 if c_y>=params.b0 && c_y<=params.b1
                     speed_tracks(trackIdx).frame_count = speed_tracks(trackIdx).frame_count + 1;
+                    speed_tracks(trackIdx).displacement = double(speed_tracks(trackIdx).displacement) + sqrt((c_x-double(prev_centroid(1)))^2 + (c_y-double(prev_centroid(2)))^2);
                 end
             elseif(strcmp(video_file,'traffic'))
                 if c_x<=size(frame,2) && c_y<=size(frame,1) && ~(x<=1 || y<=1)
@@ -299,6 +302,7 @@ end
                     speed_tracks(trackIdx).status = 0;
                 end
                 if speed_tracks(trackIdx).status == 1;
+                    speed_tracks(trackIdx).displacement = speed_tracks(trackIdx).displacement + sqrt((c_x-double(prev_centroid(1)))^2 + (c_y-double(prev_centroid(2)))^2);
                     speed_tracks(trackIdx).frame_count = speed_tracks(trackIdx).frame_count + 1;
                 end
             end
@@ -389,6 +393,7 @@ end
                 'status', 0, ...
                 'centroid', [c_x, c_y], ...
                 'frame_count', 1, ...
+                'displacement', 0, ...
                 'speed', -1);
             
             
@@ -405,8 +410,12 @@ end
         global params;
         for i=1:length(speed_tracks)
             if speed_tracks(i).status==2 && speed_tracks(i).speed==-1
-                speed_tracks(i).speed = double(params.pixXframe2kmXh*double(params.b1-params.b0)/double(speed_tracks(i).frame_count));
-                disp(['New speed approximation: ', num2str(params.pixXframe2kmXh*speed_tracks(i).speed), ' pix/frame']);
+                if(strcmp(video_file,'highway'))
+                    speed_tracks(i).speed = params.pixXframe2kmXh_highway*speed_tracks(i).displacement/speed_tracks(i).frame_count;                    
+                elseif(strcmp(video_file,'traffic'))
+                    speed_tracks(i).speed = params.pixXframe2kmXh_traffic*speed_tracks(i).displacement/speed_tracks(i).frame_count;
+                end
+                disp(['New speed approximation: ', num2str(speed_tracks(i).speed), ' km/h']);
             end
         end
     end
@@ -443,7 +452,13 @@ end
                 speeds = [reliableSpeedTracks(:).speed];
                 labels = cell(1,length(ids));
                 for i=1:length(ids)
-                    labels{i} = [int2str(ids(i)), '     ', num2str(speeds(i),2), ' pix/frame'];
+                    if reliableSpeedTracks(i).status == 0
+                        labels{i} = [int2str(ids(i)), ' ', '(tracking...)'];
+                    elseif reliableSpeedTracks(i).status == 1
+                        labels{i} = [int2str(ids(i)), ' ', '(computing...)'];
+                    else
+                        labels{i} = [int2str(ids(i)), '     ', num2str(speeds(i)), ' km/h'];
+                    end
                 end
                 
                 % Create labels for objects indicating the ones for

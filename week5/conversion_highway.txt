@@ -1,0 +1,7 @@
+d_m = 8m               |=> d_m/d_pix = 8/80 = 1/10 m/pix = 10^-3km/pix;
+d_pix = 220-140 = 80pix |						
+frame_rate = 10 fr/s = 10 fr/s * 3600s / h = 36000 fr/h			
+
+beta = 36000
+alpha = 10^-3
+v = x pix/frame * alpha km/pix * beta frame/h = 36 km*frame/(pix*h) * x pix/frame

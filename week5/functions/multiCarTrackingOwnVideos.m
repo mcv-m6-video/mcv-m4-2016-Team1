@@ -448,7 +448,11 @@ end
                 speeds = [reliableSpeedTracks(:).speed];
                 labels = cell(1,length(ids));
                 for i=1:length(ids)
-                    labels{i} = [int2str(ids(i)), '     ', num2str(speeds(i)*10,2), ' km/h'];
+                    if speeds(i) < 0
+                        labels{i} = [int2str(ids(i)), ' ', '(tracking...)'];
+                    else
+                        labels{i} = [int2str(ids(i)), '     ', num2str(speeds(i)*10,2), ' km/h'];
+                    end
                 end
                 
                 % Create labels for objects indicating the ones for

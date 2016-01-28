@@ -20,7 +20,8 @@ function params = load_parameters()
     params.a1=0; % Keep it at 0 please
     params.b1=220;
     
-    params.pixXframe2kmXh = 1.0;
+    params.pixXframe2kmXh_highway = 15.0;
+    params.pixXframe2kmXh_traffic = 1.0;
 
     
     %% Task 5

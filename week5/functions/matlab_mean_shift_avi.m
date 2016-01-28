@@ -37,8 +37,8 @@ function matlab_mean_shift_avi( )
         % objects in each frame, and playing the video.
         
         % Create a video file reader.
-        obj.reader = vision.VideoFileReader('./highway.avi');
-        obj.foreground_reader = vision.VideoFileReader('./foreground_highway.avi');
+        obj.reader = vision.VideoFileReader('highway.avi');
+        obj.foreground_reader = vision.VideoFileReader('foreground_highway.avi');
        % obj.reader = vision.VideoFileReader('../traffic.avi');
         %obj.foreground_reader = vision.VideoFileReader('../foreground_traffic.avi');
         

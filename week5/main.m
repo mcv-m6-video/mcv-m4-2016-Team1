@@ -44,9 +44,9 @@ if (doTask1)
     
     disp('Task2: Draw a bounding box around each vehicle with an ID counter.')
     
-    multiCarTracking('highway');
-    disp('Press any key to continue with the traffic sequence')
-    pause;
+%     multiCarTracking('highway');
+%     disp('Press any key to continue with the traffic sequence')
+%     pause;
     multiCarTracking('traffic');
     
 end

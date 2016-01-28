@@ -1,6 +1,6 @@
 function save_sequence(sequence, name, frame_rate)
 disp(['Writing sequence ',name])
-v = VideoWriter(name,'Uncompressed AVI');
+v = VideoWriter(name,'Motion JPEG AVI');
 v.FrameRate = frame_rate;
 open(v);
 for i=1:length(sequence)

@@ -52,10 +52,10 @@ obj = setupSystemObjects();
 nextId = 1; % ID of the next track
 
 % Detect moving objects, and track them across video frames.
-while ~isDone(obj.reader) && ~isDone(obj.foreground_reader)
+while ~isDone(obj.reader) && ~isDone(obj.foreground_reader) && ~isDone(obj.carVelocity)
     frame = obj.reader.step();
     mask = obj.foreground_reader.step();
-    %car_velocity = obj.car_velocity.step();
+    carVelocityFrame = obj.carVelocity.step();
     [centroids, bboxes] = detectObjects(mask);
     predictNewLocationsOfTracks();
     [assignments, unassignedTracks, unassignedDetections] = ...
@@ -85,26 +85,22 @@ end
         if (strcmp(video_file,'20kmh'))
             obj.reader = vision.VideoFileReader('videos/20kmh_cam.mp4');
             obj.foreground_reader = vision.VideoFileReader('foreground_20kmh.avi');
-            %obj.car_velocity = vision.VideoFileReader('videos/20kmh_car.mp4');
+            obj.carVelocity = vision.VideoFileReader('videos/20kmh_car.mp4');
         elseif (strcmp(video_file,'30kmh'))
             obj.reader = vision.VideoFileReader('videos/30kmh_cam.mp4');
             obj.foreground_reader = vision.VideoFileReader('foreground_30kmh.avi');
-            %obj.car_velocity = vision.VideoFileReader('videos/30kmh_car.mp4');
-        elseif (strcmp(video_file,'40kmh'))
-            obj.reader = vision.VideoFileReader('videos/40kmh_cam.mp4');
-            obj.foreground_reader = vision.VideoFileReader('foreground_40kmh.avi');
-            %obj.car_velocity = vision.VideoFileReader('videos/40kmh_car.mp4');
+            obj.carVelocity = vision.VideoFileReader('videos/30kmh_car.mp4');
         elseif (strcmp(video_file,'50kmh'))
             obj.reader = vision.VideoFileReader('videos/50kmh_cam.mp4');
             obj.foreground_reader = vision.VideoFileReader('foreground_50kmh.avi');
-            %obj.car_velocity = vision.VideoFileReader('videos/50kmh_car.mp4');
+            obj.carVelocity = vision.VideoFileReader('videos/50kmh_car.mp4');
         end
         
         % Create two video players, one to display the video,
         % and one to display the foreground mask.
         obj.videoPlayer = vision.VideoPlayer('Position', [20, 400, 700, 400]);
-        obj.maskPlayer = vision.VideoPlayer('Position', [740, 400, 700, 400]);
-        %obj.car = vision.VideoPlayer('Position', [20, 800, 700, 400]);
+%         obj.maskPlayer = vision.VideoPlayer('Position', [740, 400, 700, 400]);
+        obj.carPlayer = vision.VideoPlayer('Position', [740, 400, 700, 400]);
         
         
         % Connected groups of foreground pixels are likely to correspond to moving
@@ -293,26 +289,23 @@ end
             % bounding box.
             tracks(trackIdx).bbox = bbox;
             
-            % TODO
             % Speed trackers
             x = bbox(1); y = bbox(2); w = bbox(3); h = bbox(4);
             c_x = (x + (x + w)) / 2; c_y = (y + (y + h)) /2;
             speed_tracks(trackIdx).centroid = [c_x, c_y];
             
-            if(strcmp(video_file,'highway'))
-                if c_y < params.b0
+            if (strcmp(video_file,'20kmh') || strcmp(video_file,'30kmh') || strcmp(video_file,'50kmh'))
+                if c_y < params.b0_OwnVideo
                     speed_tracks(trackIdx).status = 0;
-                elseif c_y >= params.b0 && c_y < params.b1
+                elseif c_y >= params.b0_OwnVideo && c_y < params.b1_OwnVideo
                     speed_tracks(trackIdx).status = 1;
-                elseif c_y >= params.b1
+                elseif c_y >= params.b1_OwnVideo
                     speed_tracks(trackIdx).status = 2;
                 end
                 
-                if c_y >= params.b0 && c_y <= params.b1
+                if c_y >= params.b0_OwnVideo && c_y <= params.b1_OwnVideo
                     speed_tracks(trackIdx).frame_count = speed_tracks(trackIdx).frame_count + 1;
                 end            
-            elseif(strcmp(video_file,'traffic'))
-                if c_x
             end
                 
             
@@ -414,11 +407,11 @@ end
         end
     end
 
-    function updateSpeeds() % TODO
+    function updateSpeeds()
         global params;
         for i=1:length(speed_tracks)
             if speed_tracks(i).status == 2 && speed_tracks(i).speed == -1
-                speed_tracks(i).speed = double(params.pixXframe2kmXh*double(params.b1-params.b0)/double(speed_tracks(i).frame_count));
+                speed_tracks(i).speed = double(params.pixXframe2kmXh_OwnVideo*double(params.b1_OwnVideo-params.b0_OwnVideo)/double(speed_tracks(i).frame_count));
             end
         end
     end
@@ -455,7 +448,7 @@ end
                 speeds = [reliableSpeedTracks(:).speed];
                 labels = cell(1,length(ids));
                 for i=1:length(ids)
-                    labels{i} = [int2str(ids(i)), '     ', num2str(speeds(i),2), ' pix/frame'];
+                    labels{i} = [int2str(ids(i)), '     ', num2str(speeds(i)*10,2), ' km/h'];
                 end
                 
                 % Create labels for objects indicating the ones for
@@ -477,12 +470,12 @@ end
                     bboxes, labels);
             end
         end
-        if(strcmp(video_file,'highway'))
+        if (strcmp(video_file,'20kmh') || strcmp(video_file,'30kmh') || strcmp(video_file,'50kmh'))
             line0_x = linspace(1,size(frame,2),1000);  %# x values at a higher resolution
-            line0_y = params.b0 + params.a0*line0_x;                  %# corresponding y values
+            line0_y = params.b0_OwnVideo + params.a0*line0_x;                  %# corresponding y values
             
             line1_x = linspace(1,size(frame,2),1000);  %# x values at a higher resolution
-            line1_y = params.b1 + params.a1*line0_x;                   %# corresponding y values
+            line1_y = params.b1_OwnVideo + params.a1_OwnVideo*line0_x;                   %# corresponding y values
             
             index_line0 = false(size(frame));
             index_line0(round(line0_y),round(line0_x),2) = true;
@@ -494,8 +487,17 @@ end
         end
         
         % Display the mask and the frame.
-        obj.maskPlayer.step(mask);
         obj.videoPlayer.step(frame);
+        %obj.maskPlayer.step(mask);
+        
+        if strcmp(video_file,'20kmh')
+        
+        elseif strcmp(video_file,'30kmh')
+            obj.carPlayer.step(carVelocityFrame(275:end, 250:end-180, :))
+        elseif strcmp(video_file,'50kmh')
+            obj.carPlayer.step(carVelocityFrame)
+        end
+        %obj.car_velocity.step(obj.car_velocity.step());
         pause(0.03)
     end
 
@@ -518,6 +520,3 @@ end
 
 displayEndOfDemoMessage(mfilename)
 end
-
-
-

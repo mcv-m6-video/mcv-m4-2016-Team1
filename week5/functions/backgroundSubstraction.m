@@ -1,4 +1,4 @@
-function [foreEstim, seq_starting_test, seq_mean] = backgroundSubstraction(seq, alpha, P, show_videos, color_space)
+function [foreEstim, seq_starting_test, seq_mean] = backgroundSubstraction(seq, alpha, P, conn, open, close, show_videos, color_space)
 global params;
 
 % total elements in the sequence for training
@@ -48,19 +48,19 @@ for f = seq_starting_test : seq_length
         if params.fill_conn==0
             foreEstim{f-seq_starting_test+1} = estimation;
         else
-            foreEstim{f-seq_starting_test+1} = imfill(estimation,params.fill_conn,'holes');
+            foreEstim{f-seq_starting_test+1} = imfill(estimation,conn,'holes');
             if P ~= 0
                 foreEstim{f-seq_starting_test+1} = bwareaopen(foreEstim{f-seq_starting_test+1},P);
             end
             if params.closing ~= 0
-                SE_close = ones(params.closing);
-                SE_open = ones(params.opening);
+                SE_close = ones(close);
+                SE_open = ones(open);
                 foreEstim_base = foreEstim;
                 foreEstim_open{f-seq_starting_test+1}       = imopen(foreEstim{f-seq_starting_test+1}, SE_open);
                 foreEstim_open_close{f-seq_starting_test+1} = imclose(foreEstim_open{f-seq_starting_test+1}, SE_close);
                 foreEstim{f-seq_starting_test+1} = foreEstim_open_close{f-seq_starting_test+1};
             end
-            foreEstim{f-seq_starting_test+1} = imfill(foreEstim{f-seq_starting_test+1},params.fill_conn,'holes');
+            foreEstim{f-seq_starting_test+1} = imfill(foreEstim{f-seq_starting_test+1},conn,'holes');
             foreEstim{f-seq_starting_test+1} = imerode(foreEstim{f-seq_starting_test+1},strel('diamond',3));
         end
         

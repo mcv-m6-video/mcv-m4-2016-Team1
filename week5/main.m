@@ -8,11 +8,11 @@ fprintf('Loading general parameters...\n');
 
 color_space = 'RGB'; % 'RGB', 'Gray', 'HSV', 'YUV'
 
-doTask1 = false;
+doTask1 = true;
 doTask2 = false;
 doTask3 = false;
 doTask4 = false;
-doTask5 = true;
+doTask5 = false;
 
 show_plots = false;
 show_seq = true;
@@ -24,6 +24,7 @@ addpath(genpath('.'))
 
 [seq_highway, gt_highway, seq_traffic, gt_traffic] = load_seqs(color_space);
 % save_sequence(seq_highway,'highway', 10);
+% pause;
 % save_sequence(seq_traffic,'traffic', 5);
 
 global params;
@@ -38,7 +39,7 @@ if (doTask1)
 %     foreEstim_traffic = backgroundSubstraction(seq_traffic,params.alpha, params.P, params.fill_conn, params.opening, params.closing, show_videos, color_space);
 %     save_sequence(foreEstim_highway,'foreground_highway', 10);
 %     save_sequence(foreEstim_traffic,'foreground_traffic', 5);
-    
+%     pause;
     disp('Task1: Use Kalman filter to track each vehicle appearing in the sequence.')
     
     disp('Task2: Draw a bounding box around each vehicle with an ID counter.')

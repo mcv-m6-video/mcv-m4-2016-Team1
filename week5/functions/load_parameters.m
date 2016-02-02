@@ -59,6 +59,8 @@ function params = load_parameters()
     params.a1_OwnVideo = 0; % Keep it at 0 please
     params.b1_OwnVideo = 220;
     
-    params.pixXframe2kmXh_OwnVideo = 1.0;
+    params.pixXframe2kmXh_OwnVideo = 9.0;
+    
+    params.save_tracking_video = true;
     
 end

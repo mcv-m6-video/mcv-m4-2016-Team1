@@ -66,7 +66,7 @@ while ~isDone(obj.reader) && ~isDone(obj.foreground_reader)
     createNewTracks();
     updateSpeeds();
     
-%     [speed_computation_status, frame_count] = speed_update_frame_count();
+    %     [speed_computation_status, frame_count] = speed_update_frame_count();
     
     displayTrackingResults();
 end
@@ -84,15 +84,32 @@ end
         if(strcmp(video_file,'highway'))
             obj.reader = vision.VideoFileReader('highway.avi');
             obj.foreground_reader = vision.VideoFileReader('foreground_highway.avi');
-        else
+        elseif(strcmp(video_file,'traffic'))
             obj.reader = vision.VideoFileReader('traffic.avi');
             obj.foreground_reader = vision.VideoFileReader('foreground_traffic.avi');
+        elseif (strcmp(video_file,'20kmh'))
+            obj.reader = vision.VideoFileReader('videos/20kmh_cam.mp4');
+            obj.foreground_reader = vision.VideoFileReader('foreground_20kmh.avi');
+            obj.carVelocity = vision.VideoFileReader('videos/20kmh_car.mp4');
+        elseif (strcmp(video_file,'30kmh'))
+            obj.reader = vision.VideoFileReader('videos/30kmh_cam.mp4');
+            obj.foreground_reader = vision.VideoFileReader('foreground_30kmh.avi');
+            obj.carVelocity = vision.VideoFileReader('videos/30kmh_car.mp4');
+        elseif (strcmp(video_file,'50kmh'))
+            obj.reader = vision.VideoFileReader('videos/50kmh_cam.mp4');
+            obj.foreground_reader = vision.VideoFileReader('foreground_50kmh.avi');
+            obj.carVelocity = vision.VideoFileReader('videos/50kmh_car.mp4');
         end
+        
         
         % Create two video players, one to display the video,
         % and one to display the foreground mask.
         obj.videoPlayer = vision.VideoPlayer('Position', [20, 400, 700, 400]);
         obj.maskPlayer = vision.VideoPlayer('Position', [740, 400, 700, 400]);
+        
+        % VideoWriter
+        obj.videoWriter = vision.VideoFileWriter(['videos/',video_file,'_tracking.avi'],'FileFormat','AVI','FrameRate',29);
+
         
         
         % Connected groups of foreground pixels are likely to correspond to moving
@@ -104,6 +121,10 @@ end
             obj.blobAnalyser = vision.BlobAnalysis('BoundingBoxOutputPort', true, ...
                 'AreaOutputPort', true, 'CentroidOutputPort', true, ...
                 'MinimumBlobArea', 180, 'Connectivity',4); %MinimumBlobArea Traffic: 400; Highway: 180
+        elseif(strcmp(video_file,'traffic'))
+            obj.blobAnalyser = vision.BlobAnalysis('BoundingBoxOutputPort', true, ...
+                'AreaOutputPort', true, 'CentroidOutputPort', true, ...
+                'MinimumBlobArea', 400, 'Connectivity',4); %MinimumBlobArea Traffic: 400; Highway: 180
         else
             obj.blobAnalyser = vision.BlobAnalysis('BoundingBoxOutputPort', true, ...
                 'AreaOutputPort', true, 'CentroidOutputPort', true, ...
@@ -305,6 +326,20 @@ end
                     speed_tracks(trackIdx).displacement = speed_tracks(trackIdx).displacement + sqrt((c_x-double(prev_centroid(1)))^2 + (c_y-double(prev_centroid(2)))^2);
                     speed_tracks(trackIdx).frame_count = speed_tracks(trackIdx).frame_count + 1;
                 end
+                
+            else
+                if c_y<params.b0_OwnVideo
+                    speed_tracks(trackIdx).status = 0;
+                elseif c_y>=params.b0_OwnVideo && c_y<params.b1_OwnVideo
+                    speed_tracks(trackIdx).status = 1;
+                elseif c_y>=params.b1_OwnVideo
+                    speed_tracks(trackIdx).status = 2;
+                end
+                
+                if c_y>=params.b0_OwnVideo && c_y<=params.b1_OwnVideo
+                    speed_tracks(trackIdx).frame_count = speed_tracks(trackIdx).frame_count + 1;
+                    speed_tracks(trackIdx).displacement = double(speed_tracks(trackIdx).displacement) + sqrt((c_x-double(prev_centroid(1)))^2 + (c_y-double(prev_centroid(2)))^2);
+                end
             end
             
             
@@ -411,9 +446,11 @@ end
         for i=1:length(speed_tracks)
             if speed_tracks(i).status==2 && speed_tracks(i).speed==-1
                 if(strcmp(video_file,'highway'))
-                    speed_tracks(i).speed = params.pixXframe2kmXh_highway*speed_tracks(i).displacement/speed_tracks(i).frame_count;                    
+                    speed_tracks(i).speed = params.pixXframe2kmXh_highway*speed_tracks(i).displacement/speed_tracks(i).frame_count;
                 elseif(strcmp(video_file,'traffic'))
                     speed_tracks(i).speed = params.pixXframe2kmXh_traffic*speed_tracks(i).displacement/speed_tracks(i).frame_count;
+                else
+                    speed_tracks(i).speed = params.pixXframe2kmXh_OwnVideo*speed_tracks(i).displacement/speed_tracks(i).frame_count;
                 end
                 disp(['New speed approximation: ', num2str(speed_tracks(i).speed), ' km/h']);
             end
@@ -464,12 +501,12 @@ end
                 % Create labels for objects indicating the ones for
                 % which we display the predicted rather than the actual
                 % location.
-%                 labels = cellstr(int2str(ids'));
-%                 predictedTrackInds = ...
-%                     [reliableTracks(:).consecutiveInvisibleCount] > 0;
-%                 isPredicted = cell(size(labels));
-%                 isPredicted(predictedTrackInds) = {' predicted'};
-%                 labels = strcat(labels, isPredicted);
+                %                 labels = cellstr(int2str(ids'));
+                %                 predictedTrackInds = ...
+                %                     [reliableTracks(:).consecutiveInvisibleCount] > 0;
+                %                 isPredicted = cell(size(labels));
+                %                 isPredicted(predictedTrackInds) = {' predicted'};
+                %                 labels = strcat(labels, isPredicted);
                 
                 % Draw the objects on the frame.
                 frame = insertObjectAnnotation(frame, 'rectangle', ...
@@ -494,13 +531,32 @@ end
             
             frame(index_line0) = 255; %reshape([0,255,0],[1,1,3]);  %# Set the values to the max value of 255 for uint8
             frame(index_line1) = 255; %reshape([0,255,0],[1,1,3]);
+        elseif (strcmp(video_file,'20kmh') || strcmp(video_file,'30kmh') || strcmp(video_file,'50kmh'))
+            line0_x = linspace(1,size(frame,2),1000);  %# x values at a higher resolution
+            line0_y = params.b0_OwnVideo + params.a0*line0_x;                  %# corresponding y values
+            
+            line1_x = linspace(1,size(frame,2),1000);  %# x values at a higher resolution
+            line1_y = params.b1_OwnVideo + params.a1_OwnVideo*line0_x;                   %# corresponding y values
+            
+            index_line0 = false(size(frame));
+            index_line0(round(line0_y),round(line0_x),2) = true;
+            index_line1 = false(size(frame));
+            index_line1(round(line1_y),round(line1_x),2) = true;
+            
+            frame(index_line0) = 255; %reshape([0,255,0],[1,1,3]);  %# Set the values to the max value of 255 for uint8
+            frame(index_line1) = 255; %reshape([0,255,0],[1,1,3]);
         end
         
-        % Display the mask and the frame.
-        obj.maskPlayer.step(mask);
-        obj.videoPlayer.step(frame);
-        pause(0.03)
-    end
+    
+
+% Display the mask and the frame.
+obj.maskPlayer.step(mask);
+obj.videoPlayer.step(frame);
+if params.save_tracking_video
+    obj.videoWriter.step(frame);
+end
+pause(0.03)
+end
 
 %% Summary
 % This example created a motion-based system for detecting and
@@ -519,6 +575,7 @@ end
 % filters for every object. Also, you can incorporate other cues for
 % associating detections over time, such as size, shape, and color.
 
+release(obj.videoWriter);
 displayEndOfDemoMessage(mfilename)
 end
 

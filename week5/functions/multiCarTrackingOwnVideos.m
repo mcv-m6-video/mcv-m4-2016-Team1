@@ -103,6 +103,8 @@ end
         obj.carPlayer = vision.VideoPlayer('Position', [740, 400, 700, 400]);
         
         
+        
+        
         % Connected groups of foreground pixels are likely to correspond to moving
         % objects.  The blob analysis system object is used to find such groups
         % (called 'blobs' or 'connected components'), and compute their

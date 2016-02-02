@@ -8,11 +8,11 @@ fprintf('Loading general parameters...\n');
 
 color_space = 'RGB'; % 'RGB', 'Gray', 'HSV', 'YUV'
 
-doTask1 = true;
+doTask1 = false;
 doTask2 = false;
 doTask3 = false;
 doTask4 = false;
-doTask5 = false;
+doTask5 = true;
 
 show_plots = false;
 show_seq = true;
@@ -44,9 +44,9 @@ if (doTask1)
     
     disp('Task2: Draw a bounding box around each vehicle with an ID counter.')
     
-%     multiCarTracking('highway');
-%     disp('Press any key to continue with the traffic sequence')
-%     pause;
+    multiCarTracking('highway');
+    disp('Press any key to continue with the traffic sequence')
+    pause;
     multiCarTracking('traffic');
     
 end
@@ -136,6 +136,6 @@ if(doTask5)
 %     save_sequence(foreEstim_30kmh,'foreground_30kmh', 5);
 %     save_sequence(foreEstim_50kmh,'foreground_50kmh', 5);
     
-     multiCarTrackingOwnVideos('50kmh');
+     multiCarTracking('30kmh');
     
 end

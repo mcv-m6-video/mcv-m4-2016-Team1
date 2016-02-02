@@ -352,7 +352,7 @@ function matlab_mean_shift_avi( seq_name )
             
             % Display the objects. If an object has not been detected
             % in this frame, display its predicted bounding box.
-            if ~isempty(reliableTrackIndsForVisivility)
+            if ~isempty(reliableTrackInds)
             %if ~isempty(reliableTracks)
                 % Get bounding boxes.
                 bboxes = cat(1, reliableTracks.bbox);
